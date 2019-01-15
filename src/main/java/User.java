@@ -11,4 +11,11 @@ public class User {
     private String lastName;
     @SerializedName("photo")
     private String photo;
+
+    public User(BigInteger ID, String firstName, String lastName, String photo) {
+        this.ID = ID;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.photo = photo;
+    }
 }

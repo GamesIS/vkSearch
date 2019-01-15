@@ -2,13 +2,14 @@ import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserSearchResponse{
     @SerializedName("count")
     private Integer count;
     @SerializedName("items")
-    private List<User> items;
+    private List<User> items = new ArrayList<User>();
 
     public UserSearchResponse() {
     }
@@ -16,6 +17,8 @@ public class UserSearchResponse{
     public Integer getCount() {
         return this.count;
     }
+
+    public Integer getCountFromList(){ return items.size();}
 
     public List<User> getItems() {
         return this.items;

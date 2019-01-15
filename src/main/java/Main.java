@@ -51,7 +51,7 @@ public class Main {
 
     private static void sendGet() throws Exception{
 
-        String url = "https://api.vk.com/method/users.search?sort=0&count=1&fields=photo&city=125&country=1&sex=1&age_from=17&age_to=17&has_photo=1&v=5.92&access_token=" + access_token;
+        String url = "https://api.vk.com/method/users.search?sort=0&count=1000&fields=photo&city=125&country=1&sex=1&age_from=17&age_to=17&has_photo=1&v=5.92&access_token=" + access_token;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -84,7 +84,7 @@ public class Main {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(UserSearchResponse.class, new UserSearchDeserializer());
         Gson gson = builder.create();
-        System.out.println(gson.fromJson(response.toString(), UserSearchResponse.class));
+        System.out.println(gson.fromJson(response.toString(), UserSearchResponse.class).getCountFromList());
     }
 
 }
