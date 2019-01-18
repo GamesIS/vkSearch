@@ -1,8 +1,9 @@
 package com.ilku1297.objects;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserSearchResponse{
+public class UserSearchResponse {
     private Integer count;
     private List<User> items = new ArrayList<User>();
 
@@ -17,7 +18,7 @@ public class UserSearchResponse{
         this.count = count;
     }
 
-    public void addItem(User user){
+    public void addItem(User user) {
         items.add(user);
     }
 }

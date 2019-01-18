@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class Area {
+public class LastSeen {
+    private Integer time;
     @JsonProperty
-    protected Integer ID;
-    @JsonProperty
-    protected String title;
+    private Integer platform;
 }

@@ -1,28 +1,18 @@
 package com.ilku1297.db;
 
-import javafx.collections.FXCollections;
-
-import javax.imageio.ImageIO;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Comparator;
 
 public class DBHandler {
     private static final String RESOURCES_PATH = new File("resources").getAbsolutePath();
     private static final String FILE_PATH = RESOURCES_PATH + "/myDB";
     private static final String FILE_NAME = "girls.json";
 
-    public static boolean isSaveProperty(){
+    public static boolean isSaveProperty() {
         File dir = new File(FILE_PATH);
-        if(dir.isDirectory())
-        {
+        if (dir.isDirectory()) {
             // получаем все вложенные объекты в каталоге
-            for(File item : dir.listFiles()){
-                if(item.getName().equals(FILE_NAME)){
+            for (File item : dir.listFiles()) {
+                if (item.getName().equals(FILE_NAME)) {
                     return true;
                 }
             }
@@ -30,7 +20,7 @@ public class DBHandler {
         return false;
     }
 
-    public static void saveJson(DBObj dbObj){
+    public static void saveJson(DBObj dbObj) {
        /* try {
             File file = new File(FILE_PATH + File.separator + FILE_NAME);
             //file.
@@ -40,7 +30,7 @@ public class DBHandler {
         }*/
     }
 
-    public static DBObj loadJson(){
+    public static DBObj loadJson() {
        /* DBObj dbObj = null;
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(NeuroProperties.class);
@@ -54,6 +44,6 @@ public class DBHandler {
             e.printStackTrace();
         }
         return dbObj;*/
-       return null;
+        return null;
     }
 }

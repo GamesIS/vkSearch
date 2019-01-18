@@ -1,6 +1,8 @@
 package com.ilku1297;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 import com.ilku1297.json.desirializers.UserDesirializer;
 import com.ilku1297.json.desirializers.UserSearchDeserializer;
@@ -14,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class Main {
     public static final Integer APP_ID = 6820852;
@@ -60,7 +63,7 @@ public class Main {
 
     private static void sendGet() throws Exception {
 
-        String url = "https://api.vk.com/method/users.search?sort=0&count=3"+User.fields+"&city=125&country=1&sex=1&age_from=17&age_to=17&has_photo=1&v=5.92&access_token=" + access_token;
+        String url = "https://api.vk.com/method/users.search?sort=0&count=3" + User.fields + "&city=125&country=1&sex=1&age_from=17&age_to=17&has_photo=1&v=5.92&access_token=" + access_token;
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -89,9 +92,19 @@ public class Main {
         System.out.println(response.toString());
 
         //new com.ilku1297.UserSearchDeserializerhDeserializer().deserialize(response.toString(), Type.STRING, new JsonSerializationContext())
+        ////////////////
+        //Gson gson = builder.create();
+        //System.out.println(gson.fromJson(response.toString(), UserSearchResponse.class).getItems().get(0));
+        ///////////
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readValue(response.toString(), JsonNode.class);
+        String items = jsonNode.findValue("items").toString();
+        System.out.println(jsonNode.findValue("items").isArray());
+        if (items != null) {
+            System.out.println(mapper.readValue(items, new TypeReference<List<User>>() {
+            }));
+        }
 
-        Gson gson = builder.create();
-        //System.out.println(gson.fromJson(response.toString(), UserSearchResponse.class).getItems());
     }
 
 }

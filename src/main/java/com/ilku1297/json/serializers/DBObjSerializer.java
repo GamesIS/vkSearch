@@ -11,7 +11,7 @@ public class DBObjSerializer implements JsonSerializer<DBObj> {
         JsonObject result = new JsonObject();
 
         JsonArray girls = new JsonArray();
-        for(User user : dbObj.getItems()) {
+        for (User user : dbObj.getItems()) {
             girls.add(context.serialize(user));
         }
         return result;

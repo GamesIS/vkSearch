@@ -1,5 +1,6 @@
 package com.ilku1297.objects;
 
+
 public class Country extends Area {
     @Override
     public String toString() {

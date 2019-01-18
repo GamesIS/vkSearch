@@ -1,6 +1,5 @@
 package com.ilku1297.db;
 
-import com.google.gson.annotations.SerializedName;
 import com.ilku1297.objects.User;
 
 import java.util.ArrayList;
@@ -16,7 +15,8 @@ public class DBObj {
     public void setItems(List<User> items) {
         this.items = items;
     }
-    public void addItem(User user){
+
+    public void addItem(User user) {
         items.add(user);
     }
 }
