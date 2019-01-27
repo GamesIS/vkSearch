@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
+import com.ilku1297.db.DBHandler;
+import com.ilku1297.db.DBObj;
 import com.ilku1297.json.desirializers.UserDesirializer;
 import com.ilku1297.json.desirializers.UserSearchDeserializer;
 import com.ilku1297.objects.User;
@@ -98,12 +100,15 @@ public class Main {
         ///////////
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readValue(response.toString(), JsonNode.class);
+
         String items = jsonNode.findValue("items").toString();
-        System.out.println(jsonNode.findValue("items").isArray());
+        //System.out.println(jsonNode.findValue("items").isArray());
         if (items != null) {
-            System.out.println(mapper.readValue(items, new TypeReference<List<User>>() {
-            }));
+            DBHandler.saveJson(new DBObj((List) mapper.readValue(items, new TypeReference<List<User>>() {
+            })));
         }
+        System.out.println(DBHandler.loadJson());
+
 
     }
 

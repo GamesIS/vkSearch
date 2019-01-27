@@ -11,7 +11,7 @@ public class UserSearchDeserializer implements JsonDeserializer<UserSearchRespon
         JsonObject jsonObject = json.getAsJsonObject().getAsJsonObject("response");
 
         UserSearchResponse userSearchResponse = new UserSearchResponse();
-        userSearchResponse.setCount(jsonObject.get("count").getAsInt());
+        //userSearchResponse.setCount(jsonObject.get("count").getAsInt());
 
         JsonArray items = jsonObject.getAsJsonArray("items");
         for (JsonElement item : items) {
