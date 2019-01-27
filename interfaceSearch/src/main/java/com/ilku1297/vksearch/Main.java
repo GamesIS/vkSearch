@@ -27,35 +27,33 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        showListImages();
+        showListImages(stage);
     }
 
-    public void showListImages(){
+    public void showListImages(Stage stage){
         try {
-            System.out.println(INTERFACE_RESOURCE_PATH);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(new File(INTERFACE_RESOURCE_PATH + "/main.fxml").toURL());
+            Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.setTitle(NAME);
+
+            stage.show();
+
+            MainController controller = fxmlLoader.getController();
+            controller.setMain(this);
+
+            /*System.out.println(INTERFACE_RESOURCE_PATH);
             FXMLLoader fxmlLoader = new FXMLLoader();
             fxmlLoader.setLocation(new File(INTERFACE_RESOURCE_PATH + "/main.fxml").toURL());
             AnchorPane listImage = (AnchorPane) fxmlLoader.load();
-            MainController controller = fxmlLoader.getController();
-            controller.setMain(this);
+            ;*/
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(0);
-        }
-
-
-        InputStream in = null;
-        try {
-            URLConnection conn = new URL("https://sun1-11.userapi.com/c844216/v844216569/1739b7/a9h_Mk-B98I.jpg?ava=1").openConnection();
-            in = conn.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        if (in != null) {
-            Image image2 = new Image(in, 100, 200, false, true);
-            ImageView imageView2 = new ImageView(image2);
-
         }
     }
 }
