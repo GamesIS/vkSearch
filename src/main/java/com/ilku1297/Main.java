@@ -108,8 +108,6 @@ public class Main {
             })));
         }
         System.out.println(DBHandler.loadJson());
-
-
     }
 
 }

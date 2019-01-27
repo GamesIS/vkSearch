@@ -6,7 +6,11 @@
 
     <groupId>vkSearch</groupId>
     <artifactId>vkSearch</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <modules>
+        <module>interfaceSearch</module>
+    </modules>
 
     <dependencies>
         <dependency>
