@@ -36,26 +36,6 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        TransportClient transportClient = HttpTransportClient.getInstance();
-        VkApiClient vk = new VkApiClient(transportClient);
-
-        /*UserAuthResponse authResponse = vk.oauth()
-                .userAuthorizationCodeFlow(APP_ID, CLIENT_SECRET, REDIRECT_URI, code)
-                .execute();*/
-
-        //UserActor actor = new UserActor(authResponse.getUserId(), authResponse.getAccessToken()x);
-
-
-        //Thread.sleep(500);
-
-      /*  HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url);
-
-        // add request header
-        request.addHeader("com.ilku1297.objects.User.objects.User-Agent", USER_AGENT);
-
-        HttpResponse response = null;*/
-
         try {
             sendGet();
         } catch (Exception ex) {
@@ -93,16 +73,10 @@ public class Main {
         //print result
         System.out.println(response.toString());
 
-        //new com.ilku1297.UserSearchDeserializerhDeserializer().deserialize(response.toString(), Type.STRING, new JsonSerializationContext())
-        ////////////////
-        //Gson gson = builder.create();
-        //System.out.println(gson.fromJson(response.toString(), UserSearchResponse.class).getItems().get(0));
-        ///////////
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readValue(response.toString(), JsonNode.class);
 
         String items = jsonNode.findValue("items").toString();
-        //System.out.println(jsonNode.findValue("items").isArray());
         if (items != null) {
             DBHandler.saveJson(new DBObj((List) mapper.readValue(items, new TypeReference<List<User>>() {
             })));
