@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.objects.User;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,8 @@ public class DBHandler {
     private static final String FILE_NAME = "girls.json";
     private static final String GIRLS_PATH = FILE_PATH + File.separator + FILE_NAME;
     public static ObjectMapper objectMapper = new ObjectMapper();
+
+    private static Logger logger = Logger.getLogger(DBHandler.class);
 
     public static boolean isSaveProperty() {
         File dir = new File(FILE_PATH);
@@ -48,7 +51,7 @@ public class DBHandler {
             dbObj = new DBObj((List) objectMapper.readValue(items, new TypeReference<List<User>>() {
             }));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error loading JSON", e);
         }
         return dbObj;
     }

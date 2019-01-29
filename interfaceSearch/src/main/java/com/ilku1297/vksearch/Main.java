@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,8 @@ public class Main extends Application {
     public static Stage MAINSTAGE;
     public static String INTERFACE_RESOURCE_PATH = new File(System.getProperty("user.dir") + "/interfaceSearch/src/main/resources").getPath();//TODO костыль
 
+    public static Logger logger = LogManager.getLogger(Main.class);
+
     static Stage window;
 
     public static void main(String[] args) {
@@ -22,6 +26,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+
+
         MAINSTAGE = stage;
         showListImages(stage);
     }

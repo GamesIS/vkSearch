@@ -10,9 +10,6 @@ import com.ilku1297.json.desirializers.UserDesirializer;
 import com.ilku1297.json.desirializers.UserSearchDeserializer;
 import com.ilku1297.objects.User;
 import com.ilku1297.objects.UserSearchResponse;
-import com.vk.api.sdk.client.TransportClient;
-import com.vk.api.sdk.client.VkApiClient;
-import com.vk.api.sdk.httpclient.HttpTransportClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

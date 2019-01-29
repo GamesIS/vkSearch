@@ -3,21 +3,18 @@ package com.ilku1297.vksearch;
 import com.ilku1297.db.DBHandler;
 import com.ilku1297.db.DBObj;
 import com.ilku1297.objects.User;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -25,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -44,6 +40,8 @@ public class MainController {
     private Button testButton;
 
     private Main mainApp;
+
+    private static Logger logger = Logger.getLogger(MainController.class);
 
     /**
      * Конструктор.
@@ -67,21 +65,37 @@ public class MainController {
         mainApp = main;
         System.out.println(maxImage);
 
-        setContent();
+        DBObj dbObj = DBHandler.loadJson();
+        setContent(dbObj.getItems());
+
+        backgroundLoadImages(dbObj.getItems(), 0, 2);
 
     }
 
-    public void setContent() {
-
-        DBObj dbObj = DBHandler.loadJson();
-        List<User> users = dbObj.getItems();
+    public void setContent(List<User> users) {
 
         User user = users.get(0);
         setPhoto(getPhoto(user.getPhotoMaxOrig()));
         Text text1 = new Text(user.getFirstName() + " " + user.getLastName());
         text1.setFont(Font.font(FAMILY, SIZE));
-        text1.setFill(Color.RED);
+        text1.setFill(Color.BLACK);
         nameTextFlow.getChildren().addAll(text1);
+    }
+
+
+    public void backgroundLoadImages(List<User> users, int first, int last) {
+        if (first < users.size() && last < users.size() && last >= first) {
+            for (int i = first; i <= last; i++){
+                final int tmp = i;
+                new Thread(() -> {
+                    System.out.println(getPhoto(users.get(tmp).getPhotoMaxOrig()));
+                }).start();
+            }
+        }
+        else {
+            logger.error("Invalid range images");
+        }
+
     }
 
     public BufferedImage getPhoto(String strUrl) {
@@ -90,7 +104,7 @@ public class MainController {
             URL url = new URL(strUrl);
             image = ImageIO.read(url);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error loading images from URL", e);
         }
         return image;
     }

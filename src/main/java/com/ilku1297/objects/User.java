@@ -3,8 +3,10 @@ package com.ilku1297.objects;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import javafx.scene.image.Image;
 import lombok.Data;
 
+import java.awt.image.BufferedImage;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class User {
     private String lastName;
     @JsonProperty("photo")
     private String photo;
+    private BufferedImage photoBufferedImage;
 
     /**
      * 1 — женщина;
@@ -140,6 +143,8 @@ public class User {
      */
     @JsonProperty("photo_max_orig")
     private String photoMaxOrig;
+
+    private BufferedImage photoMaxBufferedImage;
 
 
     public User() {
