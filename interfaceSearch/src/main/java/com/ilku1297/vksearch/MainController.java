@@ -19,8 +19,9 @@ import org.apache.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MainController {
@@ -66,35 +67,51 @@ public class MainController {
         System.out.println(maxImage);
 
         DBObj dbObj = DBHandler.loadJson();
+        waitAssyncTasks(backgroundLoadImages(dbObj.getItems(), 0, 2));
         setContent(dbObj.getItems());
 
-        backgroundLoadImages(dbObj.getItems(), 0, 2);
 
     }
 
     public void setContent(List<User> users) {
 
         User user = users.get(0);
-        setPhoto(getPhoto(user.getPhotoMaxOrig()));
+        setPhoto(user.getPhotoMaxBufferedImage());
         Text text1 = new Text(user.getFirstName() + " " + user.getLastName());
         text1.setFont(Font.font(FAMILY, SIZE));
         text1.setFill(Color.BLACK);
         nameTextFlow.getChildren().addAll(text1);
     }
 
-
-    public void backgroundLoadImages(List<User> users, int first, int last) {
-        if (first < users.size() && last < users.size() && last >= first) {
-            for (int i = first; i <= last; i++){
-                final int tmp = i;
-                new Thread(() -> {
-                    System.out.println(getPhoto(users.get(tmp).getPhotoMaxOrig()));
-                }).start();
+    static void waitAssyncTasks(List<Thread> threadList) {
+        //threadList.stream().filter(x -> !x.isAlive()).forEach(threadList::remove); //TODO Change logic to stream
+        while (threadList.size() != 0) {
+            Iterator iterator = threadList.iterator();
+            while (iterator.hasNext()) {
+                Thread thread = (Thread) iterator.next();
+                if (!thread.isAlive()) {
+                    iterator.remove();
+                }
             }
         }
-        else {
+    }
+
+
+    public List<Thread> backgroundLoadImages(List<User> users, int first, int last) {
+        List<Thread> threadList = new ArrayList<>();
+        if (first < users.size() && last < users.size() && last >= first) {
+            for (int i = first; i <= last; i++) {
+                User tmpUser = users.get(i);
+                Thread thread = new Thread(() -> {
+                    tmpUser.setPhotoMaxBufferedImage(getPhoto(tmpUser.getPhotoMaxOrig()));
+                });
+                threadList.add(thread);
+                thread.start();
+            }
+        } else {
             logger.error("Invalid range images");
         }
+        return threadList;
 
     }
 
@@ -103,7 +120,7 @@ public class MainController {
         try {
             URL url = new URL(strUrl);
             image = ImageIO.read(url);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Error loading images from URL", e);
         }
         return image;
