@@ -1,5 +1,6 @@
 package com.ilku1297.vksearch;
 
+import com.ilku1297.VKRestSender;
 import com.ilku1297.db.DBHandler;
 import com.ilku1297.db.DBObj;
 import com.ilku1297.objects.User;
@@ -76,6 +77,7 @@ public class MainController {
     public void setContent(List<User> users) {
 
         User user = users.get(0);
+        VKRestSender.getAllPhoto(user);
         setPhoto(user.getPhotoMaxBufferedImage());
         Text text1 = new Text(user.getFirstName() + " " + user.getLastName());
         text1.setFont(Font.font(FAMILY, SIZE));
