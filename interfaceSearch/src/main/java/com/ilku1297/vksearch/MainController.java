@@ -22,8 +22,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.ilku1297.VKRestSender.getUsers;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -67,12 +70,36 @@ public class MainController {
         mainApp = main;
         System.out.println(maxImage);
 
-        DBObj dbObj = DBHandler.loadJson();
-        waitAssyncTasks(backgroundLoadImages(dbObj.getItems(), 0, 2));
-        setContent(dbObj.getItems());
+        //DBObj dbObj = DBHandler.loadJson();
+        //waitAssyncTasks(backgroundLoadImages(dbObj.getItems(), 0, 2));
+        //setContent(dbObj.getItems());
+
+
+        List<User> users = null;
+        try {
+            users = getUsers();
+        } catch (Exception e) {
+            logger.error("Error loading Users", e);
+        }
+        //waitAssyncTasks(backgroundLoadImages(users, 0, 2));
+        //setContent(users);
+        System.out.println("Users Size = " + users.size());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        for(User user: users){
+            java.util.Date time=new java.util.Date((long)user.getLastSeen().getTime()*1000);
+            if(time.after(calendar.getTime())) {
+                // In between
+                //System.out.println(user.getFirstName() + " " + user.getLastName() + "          \t" + time + "          \thttp://vk.com/id" + user.getID());
+                System.out.println("http://vk.com/id" + user.getID());
+            }
+        }
+
 
 
     }
+
+
 
     public void setContent(List<User> users) {
 

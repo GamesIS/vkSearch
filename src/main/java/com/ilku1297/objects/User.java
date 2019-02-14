@@ -11,9 +11,10 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
-    public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    //public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    public static String fields = "&fields=photo,last_seen,sex";
 
     @JsonProperty("id")
     private BigInteger ID;
@@ -137,6 +138,20 @@ public class User {
 
     @JsonProperty("site")
     private String site;
+
+
+    /**
+     * есть ли у текущего пользователя возможность видеть профиль пользователя при is_closed = true
+     * */
+
+    @JsonProperty ("can_access_closed")
+    private Boolean canAccessClosed;
+
+    /**
+     * включена ли приватность профиля;
+     * */
+    @JsonProperty ("is_closed")
+    private Boolean isClosed;
 
     /***
      * url фотографии максимального размера. Может быть возвращена фотография, имеющая ширину как 400, так и 200 пикселей. В случае отсутствия у пользователя фотографии возвращается https://vk.com/images/camera_400.png.

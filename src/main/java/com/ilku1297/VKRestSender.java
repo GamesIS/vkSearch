@@ -30,24 +30,26 @@ public class VKRestSender {
     public static final String VERSION_API = "5.92";
     private static final Logger logger = Logger.getLogger(VKRestSender.class);
     private static final String VER_ACC_TOK = "&v=" + VERSION_API + "&access_token=" + ACCESS_TOKEN;
+    private static final String ADDRESS = "https://api.vk.com/method/";
 
-    public static final GsonBuilder builder = new GsonBuilder();
+    /*public static final GsonBuilder builder = new GsonBuilder();
 
     static {
         builder.registerTypeAdapter(UserSearchResponse.class, new UserSearchDeserializer());
         builder.registerTypeAdapter(User.class, new UserDesirializer());
-    }
+    }*/
 
     public static List<Photo> getAllPhoto(User user){
-        String url = "https://api.vk.com/method/photos.getAll?owner_id=" + user.getID() + "&count=200&extended=1" + VER_ACC_TOK;
+        String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=200&extended=1" + VER_ACC_TOK;
         String response = sendGet(url);
         System.out.println(response);
         return null;
     }
 
-    public static void getUsers() throws Exception {
-
-        String url = "https://api.vk.com/method/users.search?sort=0&count=3" + User.fields + "&city=125&country=1&sex=1&age_from=17&age_to=17&has_photo=1" + VER_ACC_TOK;
+    public static List<User> getUsers() throws Exception {
+        //"https://vk.com/search?cage_from=19&cage_to=19&ccity=125&ccountry=1&cper_page=40&cphoto=1&cq=%D0%AE%D0%BB%D0%B8%D1%8F&csection=people&csex=1"
+        //VK возвращает не все
+        String url = ADDRESS + "users.search?sort=0&count=999" + User.fields + "&city=125&country=1&sex=1&age_from=19&age_to=19&has_photo=1&q=Юлия" + VER_ACC_TOK;
         String response = sendGet(url);
 
         //print result
@@ -57,11 +59,16 @@ public class VKRestSender {
         JsonNode jsonNode = mapper.readValue(response, JsonNode.class);
 
         String items = jsonNode.findValue("items").toString();
+        DBObj dbObj = null;
         if (items != null) {
-            DBHandler.saveJson(new DBObj((List) mapper.readValue(items, new TypeReference<List<User>>() {
-            })));
+            dbObj = new DBObj((List) mapper.readValue(items, new TypeReference<List<User>>() {}));
+            DBHandler.saveJson(dbObj);
         }
         System.out.println(DBHandler.loadJson());
+        if (dbObj!= null){
+            return dbObj.getItems();
+        }
+        return null;
     }
 
     public static String sendGet(String url){
