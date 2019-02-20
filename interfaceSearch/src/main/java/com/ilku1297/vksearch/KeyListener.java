@@ -17,6 +17,12 @@ public class KeyListener implements NativeKeyListener {
 
     public KeyListener(MainController mainController) {
         this.mc = mainController;
+        LogManager.getLogManager().reset();
+
+        // Get the logger for "org.jnativehook" and set the level to off.
+        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+        logger.setLevel(Level.OFF);
+
         try {
             GlobalScreen.registerNativeHook();
         } catch (NativeHookException e) {
@@ -24,11 +30,6 @@ public class KeyListener implements NativeKeyListener {
         }
         GlobalScreen.addNativeKeyListener(this);
         // Clear previous logging configurations.
-        LogManager.getLogManager().reset();
-
-// Get the logger for "org.jnativehook" and set the level to off.
-        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-        logger.setLevel(Level.OFF);
     }
 
     @Override
