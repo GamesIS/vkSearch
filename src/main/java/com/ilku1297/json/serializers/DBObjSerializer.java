@@ -6,6 +6,7 @@ import com.ilku1297.objects.User;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public class DBObjSerializer implements JsonSerializer<DBObj> {
     public JsonElement serialize(DBObj dbObj, Type type, JsonSerializationContext context) {
         JsonObject result = new JsonObject();

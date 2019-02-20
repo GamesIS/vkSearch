@@ -7,6 +7,7 @@ import com.ilku1297.objects.User;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public class UserSesirializer implements JsonSerializer<User> {
     public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
         return null;

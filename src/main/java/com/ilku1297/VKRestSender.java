@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.db.DBHandler;
 import com.ilku1297.db.DBObj;
 import com.ilku1297.objects.User;
+import com.ilku1297.objects.photos.Photo;
+import com.ilku1297.objects.photos.PhotoList;
 import com.ilku1297.proxy.JProxy;
 import com.ilku1297.proxy.ProxyHandler;
-import com.vk.api.sdk.objects.photos.Photo;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -32,8 +33,8 @@ public class VKRestSender {
     public static final String USER_AGENT = "Mozilla/5.0";
     public static final String VERSION_API = "5.92";
     private static final Logger logger = Logger.getLogger(VKRestSender.class);
-    private static final String VER_ACC_TOK = "&v=" + VERSION_API + "&access_token=" + ACCESS_TOKEN;
-    private static final String ADDRESS = "https://api.vk.com/method/";
+    public static final String VER_ACC_TOK = "&v=" + VERSION_API + "&access_token=" + ACCESS_TOKEN;
+    public static final String ADDRESS = "https://api.vk.com/method/";
 
     /*public static final GsonBuilder builder = new GsonBuilder();
 
@@ -43,24 +44,51 @@ public class VKRestSender {
     }*/
 
     public static List<Photo> getAllPhoto(User user) {
-        String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=200&extended=1" + VER_ACC_TOK;
-        String response;
-       /* try{//TODO Раскомментить
-            response = sendGet(url);
-        }
-        catch (RemoteException ex){
-            throw new IllegalArgumentException();
-        }*/
+        String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=200&extended=1&photo_sizes=1" + VER_ACC_TOK;
+        String response = null;
+        String items = null;
+        try{
+            response = sendGet(url, false);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readValue(response, JsonNode.class);
+            JsonNode itemsNode = jsonNode.findValue("items");
+            if (itemsNode != null) {
+                items = itemsNode.toString();
+                System.out.println(items);
+            }
 
+            List<Photo> photoList = null;
+            if (items != null) {
+                photoList = mapper.readValue(items, new TypeReference<List<Photo>>() {});
+            }
+            else {
+                itemsNode = jsonNode.findValue("error_msg");
+                if (itemsNode != null) {
+                    items = itemsNode.asText();
+                    if(items.equals("This profile is private")){
+                        throw new IllegalArgumentException(items);
+                    }
+                    System.out.println(items);
+                }
+            }
+            return photoList;
+
+        }
+        catch (IllegalArgumentException ex){
+            throw new IllegalArgumentException(ex.getMessage());
+        }
+        catch (Exception ex){
+            logger.error("Error loading allPhoto" , ex);
+        }
         return null;
     }
 
-    public static List<User> getUsersByName(String name, int ageFrom, int ageTo) throws Exception {
+    public static List<User> getUsersByName(String name, int ageFrom, int ageTo, boolean isNeedProxy) throws Exception {
         String url = ADDRESS + "users.search?sort=0&count=999" + User.fields + "&city=125&country=1&sex=1&age_from=" + ageFrom + "&age_to=" + ageTo + "&has_photo=1&q=" + name + VER_ACC_TOK;
-        return getUsers(url);
+        return getUsers(url, isNeedProxy);
     }
 
-    public static List<User> getUsers(String url) throws InterruptedException {
+    public static List<User> getUsers(String url , boolean isNeedProxy) throws InterruptedException {
         //"https://vk.com/search?cage_from=19&cage_to=19&ccity=125&ccountry=1&cper_page=40&cphoto=1&cq=%D0%AE%D0%BB%D0%B8%D1%8F&csection=people&csex=1"
         //VK возвращает не все
         //String url = ADDRESS + "users.search?sort=0&count=999" + User.fields + "&city=125&country=1&sex=1&age_from=21&age_to=21&has_photo=1&q=Юлия" + VER_ACC_TOK;
@@ -76,7 +104,7 @@ public class VKRestSender {
                     //Thread.sleep(150);
                     isNoData = false;
                 }
-                response = sendGet(url, true);
+                response = sendGet(url, isNeedProxy);
 
                 System.out.println(response);
 
@@ -152,16 +180,18 @@ public class VKRestSender {
                 response.append(inputLine);
             }
             in.close();
+            if(isNeedProxy){
+                final JProxy tmp = jProxy;
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(3000);
+                        tmp.setBusy(false);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
 
-            final JProxy tmp = jProxy;
-            new Thread(() -> {
-                try {
-                    Thread.sleep(3000);
-                    tmp.setBusy(false);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
 
             return response.toString();
         }

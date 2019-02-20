@@ -1,5 +1,6 @@
 package com.ilku1297.vksearch;
 
+import com.ilku1297.db.DBHandler;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,13 +27,14 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        logger.info("Start Application");
 
-
+        DBHandler.loadJson();
         MAINSTAGE = stage;
         showListImages(stage);
     }
 
-    public void showListImages(Stage stage){
+    public void showListImages(Stage stage) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(new File(INTERFACE_RESOURCE_PATH + "/main.fxml").toURL());
             Parent root = fxmlLoader.load();
@@ -53,8 +55,13 @@ public class Main extends Application {
             AnchorPane listImage = (AnchorPane) fxmlLoader.load();
             ;*/
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
             System.exit(0);
         }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        DBHandler.saveJson();
     }
 }

@@ -5,6 +5,7 @@ import com.ilku1297.objects.User;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public class UserDesirializer implements JsonDeserializer<User> {
     public User deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();

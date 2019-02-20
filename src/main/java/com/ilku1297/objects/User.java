@@ -1,19 +1,33 @@
 package com.ilku1297.objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ilku1297.VKRestSender;
 import javafx.scene.image.Image;
 import lombok.Data;
+import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.math.BigInteger;
 import java.util.List;
 
+import static com.ilku1297.VKRestSender.ADDRESS;
+import static com.ilku1297.VKRestSender.VER_ACC_TOK;
+
 @Data
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+    @JsonIgnore
+    private static Logger logger = Logger.getLogger(User.class);
+    @JsonIgnore
+    public static final String NO_PHOTO = "https://image.shutterstock.com/image-vector/no-photo-camera-vector-sign-260nw-185031695.jpg";
+
     //public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    @JsonIgnore
     public static String fields = "&fields=photo,last_seen,sex";
 
     @JsonProperty("id")
@@ -24,6 +38,7 @@ public class User {
     private String lastName;
     @JsonProperty("photo")
     private String photo;
+    @JsonIgnore
     private BufferedImage photoBufferedImage;
 
     /**
@@ -159,6 +174,32 @@ public class User {
     @JsonProperty("photo_max_orig")
     private String photoMaxOrig;
 
+    @JsonIgnore
+    public String getCustomPhotoMaxOrig() {
+        if(photoMaxOrig != null){
+            return photoMaxOrig;
+        }
+        else {
+            String url = ADDRESS + "users.get?user_ids=" + ID + "&fields=photo_max_orig"  + VER_ACC_TOK;
+            try {
+                String response = VKRestSender.sendGet(url, false);
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = mapper.readValue(response, JsonNode.class);
+                JsonNode itemsNode = jsonNode.findValue("photo_max_orig");
+                if(itemsNode != null){
+                    photoMaxOrig = itemsNode.asText();
+                    System.out.println(photoMaxOrig);
+                    return photoMaxOrig;
+                }
+            } catch (Exception e) {
+                logger.error("Error getPhotoMaxOrig", e);
+            }
+            hasPhoto = 0;
+            return NO_PHOTO;
+        }
+    }
+
+    @JsonIgnore
     private BufferedImage photoMaxBufferedImage;
 
 

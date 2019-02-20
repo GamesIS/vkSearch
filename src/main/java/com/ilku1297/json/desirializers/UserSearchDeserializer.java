@@ -6,6 +6,7 @@ import com.ilku1297.objects.UserSearchResponse;
 
 import java.lang.reflect.Type;
 
+@Deprecated
 public class UserSearchDeserializer implements JsonDeserializer<UserSearchResponse> {
     public UserSearchResponse deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject().getAsJsonObject("response");

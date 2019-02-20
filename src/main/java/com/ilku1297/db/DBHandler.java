@@ -53,7 +53,6 @@ public class DBHandler {
             while ((name = br.readLine()) != null){
                 name = name.trim();
                 names.add(name);
-                //System.out.println("\"" + name + "\"");
             }
 
         } catch (IOException e) {
