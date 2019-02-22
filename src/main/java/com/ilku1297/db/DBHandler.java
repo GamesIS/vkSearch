@@ -167,7 +167,7 @@ public class DBHandler {
         }
     }
 
-    public static void saveImage(Photo photo){
+    public static void saveImage(Photo photo, BufferedImage bufImage){
         File f = new File(GIRLS_FOLDER);
 
         if(!f.exists()){
@@ -189,8 +189,7 @@ public class DBHandler {
         }
 
         try {
-            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(photo.getDownloadedMaxImage(), null);
-            ImageIO.write(bufferedImage, "jpg", image);
+            ImageIO.write(bufImage, "jpg", image);
         } catch (IOException ex) {
             logger.error("Error save image to file :" + photo, ex);
         }

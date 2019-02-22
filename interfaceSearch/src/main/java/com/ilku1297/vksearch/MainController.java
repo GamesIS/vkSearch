@@ -236,8 +236,7 @@ public class MainController {
             for (Photo photo : user.getPhotoList()) {
                 DBHandler.checkPhoto(photo);
                 if(photo.getDownloadedMaxImage() == null){
-                    photo.setDownloadedMaxImage(downloadPhoto(photo.getMaxPhotoURL()));
-                    DBHandler.saveImage(photo);
+                    photo.setDownloadedMaxImage(downloadPhoto(photo));
                 }
             }
         }
@@ -307,6 +306,7 @@ public class MainController {
     }
 
     public static BufferedImage downloadPhoto(String strUrl) {
+        //Todo Сделать Try catch для отсутсвия подключения уже реализовано, вынести в метод
         BufferedImage image = null;
         try {
             URL url = new URL(strUrl);
@@ -316,6 +316,13 @@ public class MainController {
             return downloadPhoto(User.NO_PHOTO);
         }
         return image;
+    }
+
+
+    public static BufferedImage downloadPhoto(Photo photo) {
+        BufferedImage bufferedImage = downloadPhoto(photo.getMaxPhotoURL());
+        DBHandler.saveImage(photo, bufferedImage);
+        return bufferedImage;
     }
 
     private BufferedImage scaleImage(BufferedImage originalImage) {
