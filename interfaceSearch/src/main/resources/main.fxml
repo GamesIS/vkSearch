@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane fx:id="mainBox" prefHeight="860.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ilku1297.vksearch.MainController">
+<AnchorPane fx:id="mainBox" prefHeight="860.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ilku1297.vksearch.MainController">
    <children>
       <TextFlow fx:id="nameTextFlow" layoutX="742.0" layoutY="14.0" prefHeight="46.0" prefWidth="348.0" />
       <AnchorPane fx:id="maxImageAnchor" layoutX="14.0" layoutY="14.0" prefHeight="550.0" prefWidth="400.0" style="-fx-background-color: black">

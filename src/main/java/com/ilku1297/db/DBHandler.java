@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 public class DBHandler {
-    public static final Map<BigInteger, User> userMap = Collections.synchronizedMap(new HashMap<BigInteger, User> ());
+    public static final Map<Integer, User> userMap = Collections.synchronizedMap(new HashMap<Integer, User> ());
     public static final String RESOURCES_PATH = new File("src").getAbsolutePath();
     public static final String FILE_PATH = RESOURCES_PATH + "\\main\\resources\\myDB";
     public static final String GIRLS_JSON = "girls.json";
@@ -138,7 +138,7 @@ public class DBHandler {
 
 
     //public static final String GIRLS_FOLDER = "H:\\GirlsPhoto";
-    public static final String GIRLS_FOLDER = "H:\\girlsPhoto";
+    public static final String GIRLS_FOLDER = "D:\\girlsPhoto";
     public static void checkPhoto(Photo photo) {
         File f = new File(GIRLS_FOLDER);
         if(!f.exists()){

@@ -1,6 +1,5 @@
 package com.ilku1297.vksearch;
 
-import javafx.scene.input.KeyCode;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -43,21 +42,27 @@ public class KeyListener implements NativeKeyListener {
 
         if(NativeKeyEvent.VC_DOWN == ev.getKeyCode()){
             if(mc.scrollIndex + 1 < mc.imageViewList.size()){
-                ensureVisible(mc.galleryScroll, mc.imageViewList.get(++mc.scrollIndex));
+                ensureVisible(mc.galleryScroll, mc.imageViewList, ++mc.scrollIndex);
+                mc.mainImage.setImage(mc.imageViewList.get(mc.scrollIndex).getImage());
             }
         }
         if(NativeKeyEvent.VC_UP == ev.getKeyCode()){
             if(mc.scrollIndex - 1 >= 0){//TODO  а если их нет
-                ensureVisible(mc.galleryScroll, mc.imageViewList.get(--mc.scrollIndex));
+                ensureVisible(mc.galleryScroll, mc.imageViewList, --mc.scrollIndex);
+                mc.mainImage.setImage(mc.imageViewList.get(mc.scrollIndex).getImage());
             }
         }
         if(NativeKeyEvent.VC_RIGHT == ev.getKeyCode()){
-            if(mc.currentUserIndex + 1 < mc.userList.size()){
+            if(mc.currentUserIndex + 1 < mc.fullUserList.size()){
+                mc.scrollIndex = 0;
+                ensureVisible(mc.galleryScroll, mc.imageViewList, mc.scrollIndex);
                 mc.setContent(++mc.currentUserIndex);
             }
         }
         if(NativeKeyEvent.VC_LEFT == ev.getKeyCode()){
             if(mc.currentUserIndex - 1 >= 0){//TODO  а если их нет
+                mc.scrollIndex = 0;
+                ensureVisible(mc.galleryScroll, mc.imageViewList, mc.scrollIndex);
                 mc.setContent(--mc.currentUserIndex);
             }
         }

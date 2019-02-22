@@ -8,7 +8,7 @@ import com.ilku1297.proxy.ProxyHandler;
 import com.ilku1297.vksearch.multithreading.SearchThread;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,10 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
 import org.apache.log4j.Logger;
@@ -30,10 +27,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.ilku1297.db.DBHandler.userMap;
-import static com.ilku1297.vksearch.Main.isAdmin;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -49,28 +46,31 @@ public class MainController {
     public Label countProxiesLabel;
     public VBox galleryBox;
     public ScrollPane galleryScroll;
+    public AnchorPane mainBox;
+    public ImageView mainImage;
+    public TextFlow nameTextFlow;
+    public AnchorPane maxImageAnchor;
+    public Button testButton;
 
     public int scrollIndex = 0;
     public int currentUserIndex = 0;
 
     public List<ImageView> imageViewList = new ArrayList<>();
-    public AnchorPane mainBox;
 
-    @FXML
-    private ImageView mainImage;
-    @FXML
-    private TextFlow nameTextFlow;
     private Hyperlink hyperlink = new Hyperlink();
-    @FXML
-    private AnchorPane maxImageAnchor;
-    @FXML
-    private Button testButton;
 
     private Main mainApp;
 
     private static Logger logger = Logger.getLogger(MainController.class);
 
-    public List<User> userList;
+    public List<User> fullUserList;
+    public List<User> readyToUIUserList;
+    public List<User> userUIList;
+    public List<User> notCheckedUser;
+
+    private VBox centerIndicatorVerticBox = new VBox();
+    private ProgressIndicator progressIndicator = new ProgressIndicator();
+    private HBox centerIndicatorHorizBox = new HBox();
 
     /**
      * Конструктор.
@@ -100,7 +100,6 @@ public class MainController {
         });
         new KeyListener(this);
 
-        testButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> DBHandler.checkPhoto(userList.get(0).getMainPhoto()));
         searchButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> startSearch());
         checkProxyButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             checkProxyButton.setDisable(true);
@@ -109,9 +108,48 @@ public class MainController {
             checkProxyButton.setDisable(false);
             searchButton.setDisable(false);
         });
+
+        {
+            centerIndicatorHorizBox.setAlignment(Pos.CENTER);
+            centerIndicatorHorizBox.setPrefWidth(mainBox.getPrefWidth());
+            centerIndicatorHorizBox.setPrefHeight(mainBox.getPrefHeight());
+            centerIndicatorHorizBox.getChildren().addAll(progressIndicator);
+
+            centerIndicatorVerticBox.setAlignment(Pos.CENTER);
+            centerIndicatorVerticBox.setPrefWidth(mainBox.getPrefWidth());
+            centerIndicatorVerticBox.setPrefHeight(mainBox.getPrefHeight());
+            centerIndicatorVerticBox.getChildren().add(centerIndicatorHorizBox);
+
+            centerIndicatorVerticBox.setVisible(false);
+            progressIndicator.setVisible(false);
+            centerIndicatorHorizBox.setVisible(false);
+
+            mainBox.getChildren().add(centerIndicatorVerticBox);
+        }
+    }
+
+    public void hideAllElements(Boolean bool){
+        searchButton.setVisible(bool);
+        statusLabel.setVisible(bool);
+        checkProxyButton.setVisible(bool);
+        countProxiesLabel.setVisible(bool);
+        galleryBox.setVisible(bool);
+        galleryScroll.setVisible(bool);
+        mainImage.setVisible(bool);
+        nameTextFlow.setVisible(bool);
+        maxImageAnchor.setVisible(bool);
+        testButton.setVisible(bool);
+    }
+
+    public void progressIndicatorHandle(Boolean activate){
+        centerIndicatorVerticBox.setVisible(activate);
+        progressIndicator.setVisible(activate);
+        centerIndicatorHorizBox.setVisible(activate);
+        hideAllElements(!activate);
     }
 
     public void setMain(Main main) {
+
 
         mainApp = main;
 
@@ -121,8 +159,12 @@ public class MainController {
         nameTextFlow.getChildren().addAll(hyperlink);
 
         DBHandler.loadJson();
-        userList = new ArrayList<>(userMap.values());
-        //waitAssyncTasks(backgroundLoadImages(userList, 0, 2));
+        fullUserList = new ArrayList<>(userMap.values());
+        notCheckedUser = new ArrayList<>(fullUserList);
+        readyToUIUserList = new ArrayList<>();
+        userUIList = new ArrayList<>();
+        Collections.shuffle(fullUserList);
+        //waitAssyncTasks(backgroundLoadImages(fullUserList, 0, 2));
         preLoadingImages();
         setContent(0);
 
@@ -166,8 +208,8 @@ public class MainController {
 
     public void preLoadingImages(){
         new Thread(() -> {
-            for(User user: userList){
-                while (userList.indexOf(user) - currentUserIndex > 15){
+            for(User user: fullUserList){
+                while (fullUserList.indexOf(user) - currentUserIndex > 15){
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -186,19 +228,17 @@ public class MainController {
 
     }
 
-    private Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    public void setContent(Integer userID) {
-        User user = userList.get(userID);
+    public static Boolean usersEnded = false;
+
+    public void setContent(Integer userID){
+        boolean userNotLoaded = false;
         while(true){
-            System.out.println("setContent " + user.getFirstName() + " " + user.getLastName() + " " + user.getIsLoaded());
-            if(!user.getIsLoaded()){
-                logger.info("User is not loaded");
+            if(readyToUIUserList.isEmpty() && !notCheckedUser.isEmpty()){
+                logger.info("Users is not loaded");
                 try {
-                    alert.setTitle("Info");
-                    alert.setHeaderText(null);
-                    alert.setContentText("User is not loaded! Wait Please");
-                    if(!alert.isShowing()){
-                        Platform.runLater(() -> alert.show());
+                    if(!progressIndicator.isVisible()){
+                        Platform.runLater(() -> progressIndicatorHandle(true));
+                        userNotLoaded = true;
                     }
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -206,6 +246,16 @@ public class MainController {
                 }
                 continue;
             }
+            if(userNotLoaded){
+                Platform.runLater(() -> progressIndicatorHandle(false));
+            }
+            if(readyToUIUserList.isEmpty() && notCheckedUser.isEmpty()){
+                usersEnded = true;
+                logger.info("Users Finished");
+                setContent(userID);
+                return;
+            }
+            User user = readyToUIUserList.get(0);
             Platform.runLater(() -> {
                 if(user.getPhotoList()!=null){
                     setScrollGallery(user.getPhotoList());
@@ -256,20 +306,34 @@ public class MainController {
         }
     }
 
-    public static void ensureVisible(ScrollPane pane, Node node) {
+    public static void ensureVisible(ScrollPane pane, List<ImageView> imageViewList, Integer index) {
         Platform.runLater(() -> {
-            double width = pane.getContent().getBoundsInLocal().getWidth();
-            double height = pane.getContent().getBoundsInLocal().getHeight();
+            if(imageViewList.isEmpty()){
+                pane.setVvalue(0);
+                pane.setHvalue(0);
+            }
+            else {
+                if(index != 0){
+                double width = pane.getContent().getBoundsInLocal().getWidth();
+                double height = pane.getContent().getBoundsInLocal().getHeight();
 
-            double x = node.getBoundsInParent().getMaxX();
-            double y = node.getBoundsInParent().getMaxY();
+                double x = imageViewList.get(index).getBoundsInParent().getMaxX();
+                double y = imageViewList.get(index).getBoundsInParent().getMaxY();
 
-            // scrolling values range from 0 to 1
-            pane.setVvalue(y / height);
-            pane.setHvalue(x / width);
+                // scrolling values range from 0 to 1
+                    pane.setVvalue(y / height);
+                    pane.setHvalue(x / width);
 
-            // just for usability
-            node.requestFocus();
+                    imageViewList.get(index).requestFocus();
+                }
+                else {
+                    pane.setVvalue(0);
+                    pane.setHvalue(0);
+                    imageViewList.get(0).requestFocus();
+                }
+
+                // just for usability
+            }
         });
     }
 
@@ -292,14 +356,13 @@ public class MainController {
                 }
             }
             new Thread(() -> {
-                //System.out.println("TEST " + user.getFirstName() + " " + user.getLastName());
                 if(user.getMainPhoto().getDownloadedMaxImage() == null){
                     user.getMainPhoto().setDownloadedMaxImage(downloadPhoto(user.getPhoto()));
                 }
-                //System.out.println("TEST2 " + user.getFirstName() + " " + user.getLastName());
                 downloadAllPhoto(user);//Todo можно каждую в отдельном потоке, пот
                 user.setIsLoaded(true);
-                System.out.println("TEST3 " + user.getFirstName() + " " + user.getLastName() + " " + user.getIsLoaded());
+                readyToUIUserList.add(user);
+                notCheckedUser.remove(user);
             }).start();
         });
         thread.start();

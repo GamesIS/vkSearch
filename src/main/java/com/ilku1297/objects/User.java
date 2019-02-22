@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ilku1297.VKRestSender.ADDRESS;
@@ -27,12 +28,13 @@ public class User {
     @JsonIgnore
     public static final String NO_PHOTO = "https://image.shutterstock.com/image-vector/no-photo-camera-vector-sign-260nw-185031695.jpg";
 
-    //public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
     @JsonIgnore
-    public static String fields = "&fields=photo,last_seen,sex";
+    public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    //@JsonIgnore
+    //public static String fields = "&fields=photo,last_seen,sex";
 
     @JsonProperty("id")
-    private BigInteger ID;
+    private Integer ID;
     @JsonProperty("first_name")
     private String firstName;
     @JsonProperty("last_name")
@@ -202,6 +204,10 @@ public class User {
     @JsonIgnore
     private Photo mainPhoto;
 
+    public void setMainPhoto(Photo mainPhoto) {
+        this.mainPhoto = mainPhoto;
+        mainPhoto.setUserID(ID);
+    }
 
     public User() {
     }
@@ -217,6 +223,9 @@ public class User {
     @JsonIgnore
     public void setPhotoList(List<Photo> photoList) {
         this.photoList = photoList;
+        //this.photoList = new ArrayList<>();
+        //this.photoList.add(mainPhoto);
+        //this.photoList.addAll(photoList);
     }
 
     @JsonIgnore
