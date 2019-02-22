@@ -7,19 +7,15 @@ import com.ilku1297.objects.photos.Photo;
 import com.ilku1297.proxy.ProxyHandler;
 import com.ilku1297.vksearch.multithreading.SearchThread;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
@@ -37,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.ilku1297.db.DBHandler.userMap;
-import static com.ilku1297.proxy.ProxyHandler.waitAssyncTasks;
+import static com.ilku1297.vksearch.Main.isAdmin;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -61,9 +57,10 @@ public class MainController {
     public AnchorPane mainBox;
 
     @FXML
-    private ImageView maxImage;
+    private ImageView mainImage;
     @FXML
     private TextFlow nameTextFlow;
+    private Hyperlink hyperlink = new Hyperlink();
     @FXML
     private AnchorPane maxImageAnchor;
     @FXML
@@ -103,7 +100,7 @@ public class MainController {
         });
         new KeyListener(this);
 
-        testButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> maxImage.setImage(null));
+        testButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> DBHandler.checkPhoto(userList.get(0).getMainPhoto()));
         searchButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> startSearch());
         checkProxyButton.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
             checkProxyButton.setDisable(true);
@@ -115,18 +112,25 @@ public class MainController {
     }
 
     public void setMain(Main main) {
+
         mainApp = main;
+
+        hyperlink.setFont(Font.font(FAMILY, SIZE));
+        hyperlink.setBorder(Border.EMPTY);
+        hyperlink.setStyle("-fx-color: #000000;");
+        nameTextFlow.getChildren().addAll(hyperlink);
 
         DBHandler.loadJson();
         userList = new ArrayList<>(userMap.values());
-        waitAssyncTasks(backgroundLoadImages(userList, 0, 2));
+        //waitAssyncTasks(backgroundLoadImages(userList, 0, 2));
+        preLoadingImages();
         setContent(0);
 
 
 
         /*List<User> users = null; //TODO Это сортировка по last seen
         try {
-            users = getUsersByName("Екатерина", 17, 17, false);
+            users = getUsersByName("Екатерина", 19, 19, false);
         } catch (Exception e) {
             logger.error("Error loading Users", e);
         }
@@ -159,49 +163,65 @@ public class MainController {
     }
 
     public int lastTmp = 2;
+
+    public void preLoadingImages(){
+        new Thread(() -> {
+            for(User user: userList){
+                while (userList.indexOf(user) - currentUserIndex > 15){
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                backgroundLoadImages(user);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+    }
+
+    private Alert alert = new Alert(Alert.AlertType.INFORMATION);
     public void setContent(Integer userID) {
-        if(lastTmp != 0){
-            int tmp = userList.size() - 1 - lastTmp;
-            int first = 0, last = 0;
-            if(tmp > 5){
-                first = lastTmp + 1;
-                last = lastTmp + 5;
-            }
-            else if(tmp < 5 && tmp > 1){
-                first = lastTmp + 1;
-                last = lastTmp + tmp;
-            }
-            else if(tmp == 1){
-                first = lastTmp + 1;
-                last = lastTmp + 1;
-            }
-            if(!(first == 0 && last == 0 )){
-                lastTmp =last;
-                backgroundLoadImages(userList, first, last);
-            }
-        }
         User user = userList.get(userID);
-        try{
-            List<Photo> photoList = VKRestSender.getAllPhoto(user);
+        while(true){
+            System.out.println("setContent " + user.getFirstName() + " " + user.getLastName() + " " + user.getIsLoaded());
+            if(!user.getIsLoaded()){
+                logger.info("User is not loaded");
+                try {
+                    alert.setTitle("Info");
+                    alert.setHeaderText(null);
+                    alert.setContentText("User is not loaded! Wait Please");
+                    if(!alert.isShowing()){
+                        Platform.runLater(() -> alert.show());
+                    }
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
             Platform.runLater(() -> {
-                setScrollGallery(photoList);
+                if(user.getPhotoList()!=null){
+                    setScrollGallery(user.getPhotoList());
+                }
+                else {
+                    clearGallery();
+                }
             });
-        }
-        catch (IllegalArgumentException ex){
+
             Platform.runLater(() -> {
-                clearGallery();
+                setMainImage(user.getMainPhoto());
+                hyperlink.setText(user.getFirstName() + " " + user.getLastName());
+                hyperlink.setOnAction(e -> mainApp.getHostServices().showDocument("http://vk.com/id" + user.getID()));
             });
-            logger.info(ex.getMessage());
+            break;
         }
-        Platform.runLater(() -> {
-            setMaxImage(user.getPhotoMaxBufferedImage());
-            Hyperlink hyperlink = new Hyperlink(user.getFirstName() + " " + user.getLastName());
-            hyperlink.setOnAction(e -> mainApp.getHostServices().showDocument("http://vk.com/id" + user.getID()));
-            hyperlink.setFont(Font.font(FAMILY, SIZE));
-            hyperlink.setBorder(Border.EMPTY);
-            hyperlink.setStyle("-fx-color: #000000;");
-            nameTextFlow.getChildren().addAll(hyperlink);
-        });
     }
 
     private void clearGallery() {
@@ -211,17 +231,28 @@ public class MainController {
         imageViewList.clear();
     }
 
+    private static void downloadAllPhoto(User user){
+        if(user.getPhotoList() != null){
+            for (Photo photo : user.getPhotoList()) {
+                DBHandler.checkPhoto(photo);
+                if(photo.getDownloadedMaxImage() == null){
+                    photo.setDownloadedMaxImage(downloadPhoto(photo.getMaxPhotoURL()));
+                    DBHandler.saveImage(photo);
+                }
+            }
+        }
+    }
+
     private void setScrollGallery(List<Photo> photoList) {
         clearGallery();
+        //downloadAllPhoto(photoList);
         for (Photo photo : photoList) {
-            photo.setMaxImage(getPhoto(photo.getMaxPhoto()));
             ImageView view = new ImageView();
-            WritableImage image = SwingFXUtils.toFXImage(scaleImage(photo.getMaxImage()), null);
-            view.setImage(image);
+            view.setImage(photo.getDownloadedMaxImage());
             imageViewList.add(view);
             view.setFitWidth(galleryBox.getWidth() - 10);
             view.setPreserveRatio(true);
-            view.setOnMouseClicked(event -> setMaxImage(photo.getMaxImage()));
+            view.setOnMouseClicked(event -> setMainImage(photo));
             galleryBox.getChildren().add(view);
         }
     }
@@ -244,29 +275,45 @@ public class MainController {
     }
 
 
-    public List<Thread> backgroundLoadImages(List<User> users, int first, int last) {
-        List<Thread> threadList = new ArrayList<>();
-        if (first < users.size() && last < users.size() && last >= first) {
-            for (int i = first; i <= last; i++) {
-                User tmpUser = users.get(i);
-                Thread thread = new Thread(() -> tmpUser.setPhotoMaxBufferedImage(getPhoto(tmpUser.getCustomPhotoMaxOrig())));
-                threadList.add(thread);
-                thread.start();
-            }
-        } else {
-            logger.error("Invalid range images");
+    public void backgroundLoadImages(User user) {
+        if(user.getPhotoList() != null && user.getMainPhoto() != null) {
+            user.setIsLoaded(true);
+            return;
         }
-        return threadList;
-
+        Thread thread = new Thread(() -> {
+            if(user.getMainPhoto() == null){
+                user.setMainPhoto(new Photo(downloadPhoto(user.getCustomPhotoMaxOrig())));
+            }
+            if(user.getPhotoList() == null){
+                try{
+                    user.setPhotoList(VKRestSender.getAllPhoto(user));
+                }
+                catch (IllegalArgumentException ex){
+                    logger.info(ex.getMessage());
+                }
+            }
+            new Thread(() -> {
+                //System.out.println("TEST " + user.getFirstName() + " " + user.getLastName());
+                if(user.getMainPhoto().getDownloadedMaxImage() == null){
+                    user.getMainPhoto().setDownloadedMaxImage(downloadPhoto(user.getPhoto()));
+                }
+                //System.out.println("TEST2 " + user.getFirstName() + " " + user.getLastName());
+                downloadAllPhoto(user);//Todo можно каждую в отдельном потоке, пот
+                user.setIsLoaded(true);
+                System.out.println("TEST3 " + user.getFirstName() + " " + user.getLastName() + " " + user.getIsLoaded());
+            }).start();
+        });
+        thread.start();
     }
 
-    public BufferedImage getPhoto(String strUrl) {
+    public static BufferedImage downloadPhoto(String strUrl) {
         BufferedImage image = null;
         try {
             URL url = new URL(strUrl);
             image = ImageIO.read(url);
         } catch (Exception e) {
             logger.error("Error loading images from URL", e);
+            return downloadPhoto(User.NO_PHOTO);
         }
         return image;
     }
@@ -318,30 +365,28 @@ public class MainController {
             g2d.dispose();*/
     }
 
-    public void setMaxImage(BufferedImage image) {
-        if (image != null) {
+    public void setMainImage(Photo photo) {
+        if (photo != null && photo.getDownloadedMaxImage() != null) {
 
-            WritableImage toFXImage = SwingFXUtils.toFXImage(scaleImage(image), null);
-
-            maxImage.setImage(toFXImage);
+            mainImage.setImage(photo.getDownloadedMaxImage());
             centerImage();
 
             Main.MAINSTAGE.show();
             //maxImageAnchor.backgroundProperty().setValue(new Background(Color.rgb(1,2,3)));
-            //maxImage.setFitHeight(originalImage.getHeight());
-            //maxImage.setFitWidth(originalImage.getWidth());
+            //downloadedMaxImage.setFitHeight(originalImage.getHeight());
+            //downloadedMaxImage.setFitWidth(originalImage.getWidth());
             System.out.println(maxImageAnchor.getBackground().getFills().get(0).getFill());
         }
     }
 
     public void centerImage() {
-        Image img = maxImage.getImage();
+        Image img = mainImage.getImage();
         if (img != null) {
             double w = 0;
             double h = 0;
 
-            double ratioX = maxImage.getFitWidth() / img.getWidth();
-            double ratioY = maxImage.getFitHeight() / img.getHeight();
+            double ratioX = mainImage.getFitWidth() / img.getWidth();
+            double ratioY = mainImage.getFitHeight() / img.getHeight();
 
             double reducCoeff = 0;
             if (ratioX >= ratioY) {
@@ -353,8 +398,8 @@ public class MainController {
             w = img.getWidth() * reducCoeff;
             h = img.getHeight() * reducCoeff;
 
-            maxImage.setX((maxImage.getFitWidth() - w) / 2);
-            maxImage.setY((maxImage.getFitHeight() - h) / 2);
+            mainImage.setX((mainImage.getFitWidth() - w) / 2);
+            mainImage.setY((mainImage.getFitHeight() - h) / 2);
 
         }
     }

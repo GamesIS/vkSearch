@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.VKRestSender;
+import com.ilku1297.objects.photos.Photo;
 import javafx.scene.image.Image;
 import lombok.Data;
 import org.apache.log4j.Logger;
@@ -198,11 +199,26 @@ public class User {
             return NO_PHOTO;
         }
     }
-
     @JsonIgnore
-    private BufferedImage photoMaxBufferedImage;
+    private Photo mainPhoto;
 
 
     public User() {
     }
+
+    @JsonIgnore
+    private List<Photo> photoList;
+
+    @JsonIgnore
+    public List<Photo> getPhotoList() {
+        return photoList;
+    }
+
+    @JsonIgnore
+    public void setPhotoList(List<Photo> photoList) {
+        this.photoList = photoList;
+    }
+
+    @JsonIgnore
+    private Boolean isLoaded = false;
 }

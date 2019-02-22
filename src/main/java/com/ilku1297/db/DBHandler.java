@@ -4,17 +4,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.objects.User;
+import com.ilku1297.objects.photos.Photo;
 import com.ilku1297.proxy.JProxy;
 import com.ilku1297.proxy.ProxyHandler;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 import org.apache.log4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
 public class DBHandler {
     public static final Map<BigInteger, User> userMap = Collections.synchronizedMap(new HashMap<BigInteger, User> ());
-
     public static final String RESOURCES_PATH = new File("src").getAbsolutePath();
     public static final String FILE_PATH = RESOURCES_PATH + "\\main\\resources\\myDB";
     public static final String GIRLS_JSON = "girls.json";
@@ -128,6 +133,66 @@ public class DBHandler {
             synchronized (userMap){
                 userMap.put(user.getID(), user);
             }
+        }
+    }
+
+
+    //public static final String GIRLS_FOLDER = "H:\\GirlsPhoto";
+    public static final String GIRLS_FOLDER = "H:\\girlsPhoto";
+    public static void checkPhoto(Photo photo) {
+        File f = new File(GIRLS_FOLDER);
+        if(!f.exists()){
+            f.mkdirs();
+        }
+
+        File[] children = f.listFiles();
+        if (children != null) {
+            for (File child : children) {//TODO можно переписать на стримы
+                if(child.getName().equals(photo.getUserID().toString()) && child.isDirectory()){
+                    File[] images = child.listFiles();
+                    if(images != null){
+                        for(File imageFile : images){
+                            if(imageFile.getName().equals(photo.getId().toString() + ".jpg")){
+                                try {
+                                    photo.setDownloadedMaxImage(ImageIO.read(imageFile));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    public static void saveImage(Photo photo){
+        File f = new File(GIRLS_FOLDER);
+
+        if(!f.exists()){
+            f.mkdirs();
+        }
+        String userFolderPath = GIRLS_FOLDER + "\\" + photo.getUserID().toString();
+        File userFolder = new File(userFolderPath);
+        if(!userFolder.exists()){
+            userFolder.mkdir();
+        }
+        File[] images = userFolder.listFiles();
+        File image = new File(userFolderPath,photo.getId().toString() + ".jpg");
+        if(images != null){
+            for(File imageFile : images){
+                if(imageFile.getName().equals(image.getName())){
+                    return;
+                }
+            }
+        }
+
+        try {
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(photo.getDownloadedMaxImage(), null);
+            ImageIO.write(bufferedImage, "jpg", image);
+        } catch (IOException ex) {
+            logger.error("Error save image to file :" + photo, ex);
         }
     }
 }

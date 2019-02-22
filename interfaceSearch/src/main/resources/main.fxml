@@ -13,7 +13,7 @@
       <TextFlow fx:id="nameTextFlow" layoutX="742.0" layoutY="14.0" prefHeight="46.0" prefWidth="348.0" />
       <AnchorPane fx:id="maxImageAnchor" layoutX="14.0" layoutY="14.0" prefHeight="550.0" prefWidth="400.0" style="-fx-background-color: black">
          <children>
-            <ImageView fx:id="maxImage" fitHeight="550.0" fitWidth="400.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="mainImage" fitHeight="550.0" fitWidth="400.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </AnchorPane>
       <Button fx:id="testButton" layoutX="916.0" layoutY="136.0" mnemonicParsing="false" text="Button" />

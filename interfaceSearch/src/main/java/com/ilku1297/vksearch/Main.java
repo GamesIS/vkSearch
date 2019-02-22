@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 public class Main extends Application {
     public static final String NAME = "VK Search 3000";
@@ -27,11 +28,24 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+
         logger.info("Start Application");
 
         DBHandler.loadJson();
         MAINSTAGE = stage;
         showListImages(stage);
+    }
+
+    public static boolean isAdmin() {
+        Preferences prefs = Preferences.systemRoot();
+        try{
+            prefs.put("foo", "bar"); // SecurityException on Windows
+            prefs.remove("foo");
+            prefs.flush(); // BackingStoreException on Linux
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 
     public void showListImages(Stage stage) {

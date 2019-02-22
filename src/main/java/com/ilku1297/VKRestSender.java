@@ -44,7 +44,7 @@ public class VKRestSender {
     }*/
 
     public static List<Photo> getAllPhoto(User user) {
-        String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=200&extended=1&photo_sizes=1" + VER_ACC_TOK;
+        String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=20&extended=1&photo_sizes=1" + VER_ACC_TOK;
         String response = null;
         String items = null;
         try{
@@ -62,13 +62,15 @@ public class VKRestSender {
                 photoList = mapper.readValue(items, new TypeReference<List<Photo>>() {});
             }
             else {
+                if(response.equals("Access denied: user deactivated")){
+                    throw new IllegalArgumentException("Access denied: user deactivated");
+                }
                 itemsNode = jsonNode.findValue("error_msg");
                 if (itemsNode != null) {
                     items = itemsNode.asText();
                     if(items.equals("This profile is private")){
                         throw new IllegalArgumentException(items);
                     }
-                    System.out.println(items);
                 }
             }
             return photoList;
