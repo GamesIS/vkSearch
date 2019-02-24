@@ -27,9 +27,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import static com.ilku1297.VKRestSender.getUsersByName;
 import static com.ilku1297.db.DBHandler.userMap;
 
 public class MainController {
@@ -85,6 +87,9 @@ public class MainController {
      */
     @FXML
     private void initialize() {
+        System.out.println(" " + 3 + 3);
+
+
         VBox.setVgrow(galleryScroll, Priority.ALWAYS);
         //galleryScroll.setVmax(440);
         //galleryScroll.setPrefSize(115, 150);
@@ -165,14 +170,14 @@ public class MainController {
         userUIList = new ArrayList<>();
         Collections.shuffle(fullUserList);
         //waitAssyncTasks(backgroundLoadImages(fullUserList, 0, 2));
-        preLoadingImages();
-        setContent(0);
+        //preLoadingImages();
+        //setContent(0);
 
 
 
-        /*List<User> users = null; //TODO Это сортировка по last seen
+        List<User> users = null; //TODO Это сортировка по last seen
         try {
-            users = getUsersByName("Екатерина", 19, 19, false);
+            users = getUsersByName("Кристина", 17, 17, false);
         } catch (Exception e) {
             logger.error("Error loading Users", e);
         }
@@ -188,7 +193,7 @@ public class MainController {
                 //System.out.println(user.getFirstName() + " " + user.getLastName() + "          \t" + time + "          \thttp://vk.com/id" + user.getID());
                 System.out.println("http://vk.com/id" + user.getID());
             }
-        }*/ //TODO END
+        } //TODO END
 
     }
 

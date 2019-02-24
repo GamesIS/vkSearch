@@ -29,9 +29,9 @@ public class User {
     public static final String NO_PHOTO = "https://image.shutterstock.com/image-vector/no-photo-camera-vector-sign-260nw-185031695.jpg";
 
     @JsonIgnore
-    public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    //public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
     //@JsonIgnore
-    //public static String fields = "&fields=photo,last_seen,sex";
+    public static String fields = "&fields=photo,last_seen,sex";
 
     @JsonProperty("id")
     private Integer ID;

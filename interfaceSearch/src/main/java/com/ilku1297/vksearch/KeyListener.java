@@ -35,11 +35,6 @@ public class KeyListener implements NativeKeyListener {
     public void nativeKeyPressed(NativeKeyEvent ev) {
         // check your specific key press here
         // example:
-        if(ev.getKeyCode() == NativeKeyEvent.VC_R) {
-            // the key "h" is pressed
-            System.out.println("Hello!");
-        }
-
         if(NativeKeyEvent.VC_DOWN == ev.getKeyCode()){
             if(mc.scrollIndex + 1 < mc.imageViewList.size()){
                 ensureVisible(mc.galleryScroll, mc.imageViewList, ++mc.scrollIndex);

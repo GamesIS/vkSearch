@@ -138,7 +138,7 @@ public class DBHandler {
 
 
     //public static final String GIRLS_FOLDER = "H:\\GirlsPhoto";
-    public static final String GIRLS_FOLDER = "D:\\girlsPhoto";
+    public static final String GIRLS_FOLDER = "H:\\girlsPhoto";
     public static void checkPhoto(Photo photo) {
         File f = new File(GIRLS_FOLDER);
         if(!f.exists()){
