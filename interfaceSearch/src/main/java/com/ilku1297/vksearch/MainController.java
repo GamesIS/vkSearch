@@ -177,7 +177,7 @@ public class MainController {
 
         List<User> users = null; //TODO Это сортировка по last seen
         try {
-            users = getUsersByName("Кристина", 17, 17, false);
+            users = getUsersByName("Мария", 17, 17, false);
         } catch (Exception e) {
             logger.error("Error loading Users", e);
         }
