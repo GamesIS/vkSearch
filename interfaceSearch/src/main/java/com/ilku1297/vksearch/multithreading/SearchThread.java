@@ -65,7 +65,7 @@ public class SearchThread implements Runnable {
                     Thread thread = new Thread (() -> {
                         List<User> users = null;
                         try {
-                            users = VKRestSender.getUsersByName(name, tmpAge, tmpAge, true);
+                            users = VKRestSender.getUsersByName(null, name, tmpAge, tmpAge, true);
                         } catch (Exception e) {
                             logger.error("Error in SearchThread", e);
                             saveJson();

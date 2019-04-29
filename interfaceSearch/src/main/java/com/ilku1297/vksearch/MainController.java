@@ -26,9 +26,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 import static com.ilku1297.VKRestSender.getUsersByName;
@@ -175,9 +173,15 @@ public class MainController {
 
 
 
-        List<User> users = null; //TODO Это сортировка по last seen
+        Set<User> users = new HashSet<>(); //TODO Это сортировка по last seen
         try {
-            users = getUsersByName("Виктория", 17, 17, false);
+            int rangeAges = 20;
+            for(int age = 17; age <=20; age++){
+                //users = getUsersByName("Алла", 17, 20, false);
+                Thread.sleep(1000);
+                Integer groupID = 60840600;
+                users.addAll(getUsersByName(groupID, "Вероника", age, age, false));
+            }
         } catch (Exception e) {
             logger.error("Error loading Users", e);
         }

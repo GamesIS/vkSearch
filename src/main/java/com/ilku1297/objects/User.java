@@ -10,6 +10,8 @@ import com.ilku1297.VKRestSender;
 import com.ilku1297.objects.photos.Photo;
 import javafx.scene.image.Image;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
@@ -230,4 +232,22 @@ public class User {
 
     @JsonIgnore
     private Boolean isLoaded = false;
+
+    @JsonIgnore
+    private String track_code;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        return ID.equals(user.ID);
+    }
+
+    @Override
+    public int hashCode() {
+        return ID.hashCode();
+    }
 }

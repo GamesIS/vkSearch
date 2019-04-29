@@ -85,9 +85,26 @@ public class VKRestSender {
         return null;
     }
 
-    public static List<User> getUsersByName(String name, int ageFrom, int ageTo, boolean isNeedProxy) throws Exception {
-        String url = ADDRESS + "users.search?sort=0&count=999" + User.fields + "&city=125&country=1&sex=1&age_from=" + ageFrom + "&age_to=" + ageTo + "&has_photo=1&q=" + name + VER_ACC_TOK;
-        return getUsers(url, isNeedProxy);
+    public static List<User> getUsersByName(Integer groupID, String name, int ageFrom, int ageTo, boolean isNeedProxy) throws Exception {
+        StringBuilder url = new StringBuilder("");
+        url
+                .append(ADDRESS)
+                .append("users.search?sort=0&count=999")
+                .append(User.fields);
+        if(groupID == null){
+            url.append("&city=125&country=1");
+        }
+        else {
+            url.append("&group_id=").append(groupID);
+        }
+        url
+                .append("&sex=1&age_from=")
+                .append(ageFrom)
+                .append("&age_to=")
+                .append("&has_photo=1&q=")
+                .append(name)
+                .append(VER_ACC_TOK);
+        return getUsers(url.toString(), isNeedProxy);
     }
 
     public static List<User> getUsers(String url , boolean isNeedProxy) throws InterruptedException {
