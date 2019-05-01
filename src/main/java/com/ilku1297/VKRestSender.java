@@ -101,6 +101,7 @@ public class VKRestSender {
                 .append("&sex=1&age_from=")
                 .append(ageFrom)
                 .append("&age_to=")
+                .append(ageTo)
                 .append("&has_photo=1&q=")
                 .append(name)
                 .append(VER_ACC_TOK);

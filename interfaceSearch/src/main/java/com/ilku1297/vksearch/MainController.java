@@ -180,7 +180,7 @@ public class MainController {
                 //users = getUsersByName("Алла", 17, 20, false);
                 Thread.sleep(1000);
                 Integer groupID = 60840600;
-                users.addAll(getUsersByName(groupID, "Вероника", age, age, false));
+                users.addAll(getUsersByName(groupID, "Виктория", age, age, false));
             }
         } catch (Exception e) {
             logger.error("Error loading Users", e);
