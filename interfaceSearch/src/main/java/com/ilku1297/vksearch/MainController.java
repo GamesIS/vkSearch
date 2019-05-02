@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.List;
 
 import static com.ilku1297.VKRestSender.getUsersByName;
+import static com.ilku1297.db.DBHandler.names;
 import static com.ilku1297.db.DBHandler.userMap;
 
 public class MainController {
@@ -176,11 +177,10 @@ public class MainController {
         Set<User> users = new HashSet<>(); //TODO Это сортировка по last seen
         try {
             int rangeAges = 20;
-            for(int age = 17; age <=20; age++){
-                //users = getUsersByName("Алла", 17, 20, false);
+            for(String name: names){
                 Thread.sleep(1000);
                 Integer groupID = 60840600;
-                users.addAll(getUsersByName(groupID, "Виктория", age, age, false));
+                users.addAll(getUsersByName(groupID, name, 17, 21, false));
             }
         } catch (Exception e) {
             logger.error("Error loading Users", e);
