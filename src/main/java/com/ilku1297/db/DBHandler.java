@@ -6,16 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.objects.User;
 import com.ilku1297.objects.photos.Photo;
 import com.ilku1297.proxy.JProxy;
-import com.ilku1297.proxy.ProxyHandler;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 
 public class DBHandler {
@@ -24,14 +19,23 @@ public class DBHandler {
     public static final String FILE_PATH = RESOURCES_PATH + "\\main\\resources\\myDB";
     public static final String GIRLS_JSON = "girls.json";
     public static final String NAMES_TXT = "names.txt";
+    public static final String UNIVERS_TXT = "universID.txt";
+    public static final String SCHOOLS_TXT = "schoolsID.txt";
     public static final String UNCHECKED_PROXY_TXT = "uncheckedProxy.txt";
     public static final String CHECKED_PROXY_TXT = "checkedProxy.txt";
     public static final String GIRLS_PATH = FILE_PATH + File.separator + GIRLS_JSON;
     public static final String NAMES_PATH = FILE_PATH + File.separator + NAMES_TXT;
+    public static final String UNIVERS_PATH = FILE_PATH + File.separator + UNIVERS_TXT;
+    public static final String SCHOOLS_PATH = FILE_PATH + File.separator + SCHOOLS_TXT;
     public static final String UNCHECKED_PROXY_PATH = FILE_PATH + File.separator + UNCHECKED_PROXY_TXT;
     public static final String CHECKED_PROXY_PATH = FILE_PATH + File.separator + CHECKED_PROXY_TXT;
 
-    public static final List<String> names = getNames();
+    public static final List<String> names = getNames(NAMES_PATH);
+    public static final List<String> univers = getNames(UNIVERS_PATH);
+    public static final List<String> schools = getNames(SCHOOLS_PATH);
+    {
+        univers.add("");
+    }
     public static ObjectMapper objectMapper = new ObjectMapper();
 
     private static Logger logger = Logger.getLogger(DBHandler.class);
@@ -49,10 +53,10 @@ public class DBHandler {
         return false;
     }
 
-    public static List<String> getNames(){
+    public static List<String> getNames(String path){
         List<String> names = new ArrayList<>();
         try {
-            FileInputStream fstream = new FileInputStream(NAMES_PATH);
+            FileInputStream fstream = new FileInputStream(path);
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String name;
             while ((name = br.readLine()) != null){

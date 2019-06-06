@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.ilku1297.db.DBHandler.*;
+import static com.ilku1297.vksearch.ConstHelper.RUSSIA;
+import static com.ilku1297.vksearch.ConstHelper.SARATOV;
 
 public class SearchThread implements Runnable {
     private static Logger logger = Logger.getLogger("search");
@@ -27,8 +29,8 @@ public class SearchThread implements Runnable {
     public static Integer ageMax = 21;
 
     public static int sleepTime;
-    public final static int maxSleepTime = 1000;
-    public final static int minSleepTime = 500;
+    public final static int maxSleepTime = 4000;
+    public final static int minSleepTime = 1500;
     public final static int middleSleepTime = (maxSleepTime + minSleepTime) / 2;
 
     public static final int countRequestThread = 10;
@@ -65,7 +67,7 @@ public class SearchThread implements Runnable {
                     Thread thread = new Thread (() -> {
                         List<User> users = null;
                         try {
-                            users = VKRestSender.getUsersByName(null, name, tmpAge, tmpAge, true);
+                            users = VKRestSender.getUsersByName(-1, name, tmpAge, tmpAge, true, 0, null, SARATOV, RUSSIA, null);
                         } catch (Exception e) {
                             logger.error("Error in SearchThread", e);
                             saveJson();

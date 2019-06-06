@@ -85,36 +85,58 @@ public class VKRestSender {
         return null;
     }
 
-    public static List<User> getUsersByName(Integer groupID, String name, int ageFrom, int ageTo, boolean isNeedProxy) throws Exception {
+    public static List<User> getUsersByName(int groupID, String name, int ageFrom, int ageTo, boolean isNeedProxy, int status, String univer, String city, String country, String school) throws Exception {
+        boolean univerIsEmpty = univer == null;
+        boolean nameIsEmpty = name == null;
+        boolean countryIsEmpty = country == null;
+        boolean cityIsEmpty = city == null;
+        boolean groupIsEmpty = groupID == -1;
+        boolean schoolIsEmpty = school == null;
+
         StringBuilder url = new StringBuilder("");
         url
                 .append(ADDRESS)
-                .append("users.search?sort=0&count=999")
+                .append("users.search?sort=0&count=1000")
                 .append(User.fields);
-        if(groupID == null){
+        if(!countryIsEmpty){
+            url.append("&country=").append(country);
+        }
+        if(!cityIsEmpty){
+            url.append("&city=").append(city);
+        }
+        /*if(groupID == -1 || !univerIsEmpty){
             url.append("&city=125&country=1");
         }
         else {
             url.append("&group_id=").append(groupID);
+        }*/
+        if(!groupIsEmpty){
+            url.append("&group_id=").append(groupID);
+        }
+        if(!schoolIsEmpty){
+            url.append("&school=").append(school);
+        }
+        if(status != 0){
+            url.append("&status=").append(status);
+        }
+        if(!univerIsEmpty){
+            url.append("&university=").append(univer);
         }
         url
                 .append("&sex=1&age_from=")
                 .append(ageFrom)
                 .append("&age_to=")
                 .append(ageTo)
-                .append("&status=")
-                .append(6)
-                .append("&has_photo=1&q=")
-                .append(name)
-                .append(VER_ACC_TOK);
+                .append("&has_photo=1");
+        if(!nameIsEmpty){
+            url.append("&q=").append(name);
+        }
+        url.append(VER_ACC_TOK);
         return getUsers(url.toString(), isNeedProxy);
     }
 
     public static List<User> getUsers(String url , boolean isNeedProxy) throws InterruptedException {
-        //"https://vk.com/search?cage_from=19&cage_to=19&ccity=125&ccountry=1&cper_page=40&cphoto=1&cq=%D0%AE%D0%BB%D0%B8%D1%8F&csection=people&csex=1"
-        //VK возвращает не все
-        //String url = ADDRESS + "users.search?sort=0&count=999" + User.fields + "&city=125&country=1&sex=1&age_from=21&age_to=21&has_photo=1&q=Юлия" + VER_ACC_TOK;
-
+        System.out.println("URL = " + url);
         DBObj dbObj = null;
         String response = null;
         String items = null;

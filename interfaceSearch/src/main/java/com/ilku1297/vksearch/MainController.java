@@ -9,8 +9,8 @@ import com.ilku1297.vksearch.multithreading.SearchThread;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -28,10 +28,14 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.ilku1297.VKRestSender.getUsersByName;
-import static com.ilku1297.db.DBHandler.names;
-import static com.ilku1297.db.DBHandler.userMap;
+import static com.ilku1297.db.DBHandler.*;
+import static com.ilku1297.vksearch.ConstHelper.RUSSIA;
+import static com.ilku1297.vksearch.ConstHelper.SARATOV;
+import static com.ilku1297.vksearch.multithreading.SearchThread.maxSleepTime;
+import static com.ilku1297.vksearch.multithreading.SearchThread.minSleepTime;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -99,7 +103,7 @@ public class MainController {
         galleryScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         galleryScroll.setOnKeyPressed(event -> {
-            if(event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.UP || event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT)
+            if (event.getCode() == KeyCode.DOWN || event.getCode() == KeyCode.UP || event.getCode() == KeyCode.RIGHT || event.getCode() == KeyCode.LEFT)
                 event.consume();
         });
         new KeyListener(this);
@@ -132,7 +136,7 @@ public class MainController {
         }
     }
 
-    public void hideAllElements(Boolean bool){
+    public void hideAllElements(Boolean bool) {
         searchButton.setVisible(bool);
         statusLabel.setVisible(bool);
         checkProxyButton.setVisible(bool);
@@ -145,7 +149,7 @@ public class MainController {
         testButton.setVisible(bool);
     }
 
-    public void progressIndicatorHandle(Boolean activate){
+    public void progressIndicatorHandle(Boolean activate) {
         centerIndicatorVerticBox.setVisible(activate);
         progressIndicator.setVisible(activate);
         centerIndicatorHorizBox.setVisible(activate);
@@ -173,15 +177,55 @@ public class MainController {
         //setContent(0);
 
 
-
         Set<User> users = new HashSet<>(); //TODO Это сортировка по last seen
+        /*try {
+            int rangeAges = 20;
+            String name = "Юля";
+            for(int age = 17; age <= 20; age++){
+                users.addAll(getUsersByName(-1, name, age, age, false, 0, ""));
+            }
+        } catch (Exception e) {
+            logger.error("Error loading Users", e);
+        }*/
         try {
             int rangeAges = 20;
-            for(String name: names){
-                Thread.sleep(1000);
-                Integer groupID = 60840600;
-                users.addAll(getUsersByName(groupID, name, 17, 21, false));
-            }
+            String name = "Вероника";
+            String country;
+            String city;
+            String school = null;
+            String un = null;
+            int groupID = -1;
+            //for(String name: names){
+                for (int i = 0; i <= 8; i++) {
+                    for (int age = 16; age <= 21; age++) {
+                        if (i == 1) {
+                            for (String univer : univers) {
+                                country = null;
+                                city = null;
+                                un = univer;
+                                school = null;
+                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+                            }
+                            /*for (String sch : schools) {
+                                country = null;
+                                city = null;
+                                un = null;
+                                school = sch;
+                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+                            }*/
+                        } else {
+                            country = RUSSIA;
+                            city = SARATOV;
+                            un = null;
+                            school = null;
+                            Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+                            users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+                        }
+                    }
+                }
+            //}
         } catch (Exception e) {
             logger.error("Error loading Users", e);
         }
@@ -190,9 +234,9 @@ public class MainController {
         System.out.println("Users Size = " + users.size());
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -7);
-        for(User user: users){
-            java.util.Date time=new java.util.Date((long)user.getLastSeen().getTime()*1000);
-            if(time.after(calendar.getTime())) {
+        for (User user : users) {
+            java.util.Date time = new java.util.Date((long) user.getLastSeen().getTime() * 1000);
+            if (time.after(calendar.getTime())) {
                 // In between
                 //System.out.println(user.getFirstName() + " " + user.getLastName() + "          \t" + time + "          \thttp://vk.com/id" + user.getID());
                 System.out.println("http://vk.com/id" + user.getID());
@@ -200,7 +244,6 @@ public class MainController {
         } //TODO END
 
     }
-
 
 
     public void startSearch() {
@@ -215,10 +258,10 @@ public class MainController {
 
     public int lastTmp = 2;
 
-    public void preLoadingImages(){
+    public void preLoadingImages() {
         new Thread(() -> {
-            for(User user: fullUserList){
-                while (fullUserList.indexOf(user) - currentUserIndex > 15){
+            for (User user : fullUserList) {
+                while (fullUserList.indexOf(user) - currentUserIndex > 15) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
@@ -239,13 +282,13 @@ public class MainController {
 
     public static Boolean usersEnded = false;
 
-    public void setContent(Integer userID){
+    public void setContent(Integer userID) {
         boolean userNotLoaded = false;
-        while(true){
-            if(readyToUIUserList.isEmpty() && !notCheckedUser.isEmpty()){
+        while (true) {
+            if (readyToUIUserList.isEmpty() && !notCheckedUser.isEmpty()) {
                 logger.info("Users is not loaded");
                 try {
-                    if(!progressIndicator.isVisible()){
+                    if (!progressIndicator.isVisible()) {
                         Platform.runLater(() -> progressIndicatorHandle(true));
                         userNotLoaded = true;
                     }
@@ -255,10 +298,10 @@ public class MainController {
                 }
                 continue;
             }
-            if(userNotLoaded){
+            if (userNotLoaded) {
                 Platform.runLater(() -> progressIndicatorHandle(false));
             }
-            if(readyToUIUserList.isEmpty() && notCheckedUser.isEmpty()){
+            if (readyToUIUserList.isEmpty() && notCheckedUser.isEmpty()) {
                 usersEnded = true;
                 logger.info("Users Finished");
                 setContent(userID);
@@ -266,10 +309,9 @@ public class MainController {
             }
             User user = readyToUIUserList.get(0);
             Platform.runLater(() -> {
-                if(user.getPhotoList()!=null){
+                if (user.getPhotoList() != null) {
                     setScrollGallery(user.getPhotoList());
-                }
-                else {
+                } else {
                     clearGallery();
                 }
             });
@@ -290,11 +332,11 @@ public class MainController {
         imageViewList.clear();
     }
 
-    private static void downloadAllPhoto(User user){
-        if(user.getPhotoList() != null){
+    private static void downloadAllPhoto(User user) {
+        if (user.getPhotoList() != null) {
             for (Photo photo : user.getPhotoList()) {
                 DBHandler.checkPhoto(photo);
-                if(photo.getDownloadedMaxImage() == null){
+                if (photo.getDownloadedMaxImage() == null) {
                     photo.setDownloadedMaxImage(downloadPhoto(photo));
                 }
             }
@@ -317,25 +359,23 @@ public class MainController {
 
     public static void ensureVisible(ScrollPane pane, List<ImageView> imageViewList, Integer index) {
         Platform.runLater(() -> {
-            if(imageViewList.isEmpty()){
+            if (imageViewList.isEmpty()) {
                 pane.setVvalue(0);
                 pane.setHvalue(0);
-            }
-            else {
-                if(index != 0){
-                double width = pane.getContent().getBoundsInLocal().getWidth();
-                double height = pane.getContent().getBoundsInLocal().getHeight();
+            } else {
+                if (index != 0) {
+                    double width = pane.getContent().getBoundsInLocal().getWidth();
+                    double height = pane.getContent().getBoundsInLocal().getHeight();
 
-                double x = imageViewList.get(index).getBoundsInParent().getMaxX();
-                double y = imageViewList.get(index).getBoundsInParent().getMaxY();
+                    double x = imageViewList.get(index).getBoundsInParent().getMaxX();
+                    double y = imageViewList.get(index).getBoundsInParent().getMaxY();
 
-                // scrolling values range from 0 to 1
+                    // scrolling values range from 0 to 1
                     pane.setVvalue(y / height);
                     pane.setHvalue(x / width);
 
                     imageViewList.get(index).requestFocus();
-                }
-                else {
+                } else {
                     pane.setVvalue(0);
                     pane.setHvalue(0);
                     imageViewList.get(0).requestFocus();
@@ -348,24 +388,23 @@ public class MainController {
 
 
     public void backgroundLoadImages(User user) {
-        if(user.getPhotoList() != null && user.getMainPhoto() != null) {
+        if (user.getPhotoList() != null && user.getMainPhoto() != null) {
             user.setIsLoaded(true);
             return;
         }
         Thread thread = new Thread(() -> {
-            if(user.getMainPhoto() == null){
+            if (user.getMainPhoto() == null) {
                 user.setMainPhoto(new Photo(downloadPhoto(user.getCustomPhotoMaxOrig())));
             }
-            if(user.getPhotoList() == null){
-                try{
+            if (user.getPhotoList() == null) {
+                try {
                     user.setPhotoList(VKRestSender.getAllPhoto(user));
-                }
-                catch (IllegalArgumentException ex){
+                } catch (IllegalArgumentException ex) {
                     logger.info(ex.getMessage());
                 }
             }
             new Thread(() -> {
-                if(user.getMainPhoto().getDownloadedMaxImage() == null){
+                if (user.getMainPhoto().getDownloadedMaxImage() == null) {
                     user.getMainPhoto().setDownloadedMaxImage(downloadPhoto(user.getPhoto()));
                 }
                 downloadAllPhoto(user);//Todo можно каждую в отдельном потоке, пот
