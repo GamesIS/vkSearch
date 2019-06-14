@@ -2,6 +2,8 @@ package com.ilku1297.vksearch;
 
 import com.ilku1297.VKRestSender;
 import com.ilku1297.db.DBHandler;
+import com.ilku1297.db.hibernate.Girl;
+import com.ilku1297.db.hibernate.GirlService;
 import com.ilku1297.objects.User;
 import com.ilku1297.objects.photos.Photo;
 import com.ilku1297.proxy.ProxyHandler;
@@ -189,7 +191,7 @@ public class MainController {
         }*/
         try {
             int rangeAges = 20;
-            String name = "Вероника";
+            String name = "Анна";
             String country;
             String city;
             String school = null;
@@ -234,14 +236,28 @@ public class MainController {
         System.out.println("Users Size = " + users.size());
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -7);
+        Date currentDate = new Date();
+        GirlService userService = new GirlService();
+        int i = 0;
         for (User user : users) {
-            java.util.Date time = new java.util.Date((long) user.getLastSeen().getTime() * 1000);
+            /*Girl girl = new Girl(user, currentDate);
+            if (userService.findGirl(user.getID()) != null) {
+                userService.saveGirl(girl);
+            }
+            else {
+                userService.updateGirl(girl);
+                continue;
+            }*/
+
+            Date time = new Date((long) user.getLastSeen().getTime() * 1000);
             if (time.after(calendar.getTime())) {
+                i++;
                 // In between
                 //System.out.println(user.getFirstName() + " " + user.getLastName() + "          \t" + time + "          \thttp://vk.com/id" + user.getID());
                 System.out.println("http://vk.com/id" + user.getID());
             }
-        } //TODO END
+        }
+        System.out.println("Users Size Before Filter = " + i);
 
     }
 
