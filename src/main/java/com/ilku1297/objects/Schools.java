@@ -53,6 +53,6 @@ public class Schools {
     private String speciality;
     @JsonProperty
     private Integer type;
-    @JsonProperty
+    @JsonProperty("type_str")
     private String type_string;
 }

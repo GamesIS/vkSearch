@@ -31,9 +31,9 @@ public class User {
     public static final String NO_PHOTO = "https://image.shutterstock.com/image-vector/no-photo-camera-vector-sign-260nw-185031695.jpg";
 
     @JsonIgnore
-    //public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
+    public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
     //@JsonIgnore
-    public static String fields = "&fields=photo,last_seen,sex";
+    //public static String fields = "&fields=photo,last_seen,sex";
 
     @JsonProperty("id")
     private Integer ID;
@@ -41,7 +41,7 @@ public class User {
     private String firstName;
     @JsonProperty("last_name")
     private String lastName;
-    @JsonProperty("photo")
+    @JsonProperty
     private String photo;
     @JsonIgnore
     private BufferedImage photoBufferedImage;
@@ -51,7 +51,7 @@ public class User {
      * 2 — мужчина;
      * 0 — любой (по умолчанию).
      */
-    @JsonProperty("sex")
+    @JsonProperty
     private Integer sex;
 
     @JsonProperty("last_seen")
@@ -71,19 +71,19 @@ public class User {
     private Integer friendStatus;
     @JsonProperty("followers_count")
     private Integer followersCount;//Количество подписчиков
-    @JsonSetter("education")
-    private Education education;//Высшее образование //TODO
-    @JsonSetter("country")
+//    @JsonSetter
+//    private Education education;//Высшее образование //TODO
+    @JsonSetter
     private Country country;//Высшее образование
-    @JsonSetter("city")
+    @JsonSetter
     private City city; //TODO
     @JsonProperty("common_count")
     private Integer commonCount;//Количество общих друзей
     @JsonProperty("blacklisted_by_me")
     private Integer blacklistedByMe;//В ЧС ли я
-    @JsonProperty("bdate")
+    @JsonProperty
     private String bdate;//Дата рождения
-    @JsonProperty("online")
+    @JsonProperty
     private Integer online;
 
     /**
@@ -100,7 +100,7 @@ public class User {
      * <p>
      * Если в семейном положении указан другой пользователь, дополнительно возвращается объект relation_partner, содержащий id и имя этого человека.
      */
-    @JsonProperty("relation")
+    @JsonProperty
     private Integer relation; //Todo
     @JsonProperty("relation_partner")
     private Integer relationPartner;//Todo
@@ -132,7 +132,7 @@ public class User {
      * 12 — "училище";
      * 13 — "школа искусств".
      */
-    @JsonProperty("schools")//todo
+    @JsonProperty
     private List<Schools> schools; //Массив школ
     /**
      * список вузов, в которых учился пользователь. Массив объектов, описывающих университеты. Каждый объект содержит следующие поля:
@@ -148,15 +148,19 @@ public class User {
      * education_form (string) — форма обучения;
      * education_status (string) — статус (например, «Выпускник (специалист)»).
      */
-    @JsonProperty("universities")//todo
+    @JsonProperty
     private List<Universities> universities; //Массив университетов
+
+    @JsonProperty
+    private Integer university;
+
     /**
      * возвращает данные об указанных в профиле сервисах пользователя, таких как: skype, facebook, twitter, livejournal, instagram. Для каждого сервиса возвращается отдельное поле с типом string, содержащее никнейм пользователя. Например, "instagram": "username".
      */
     @JsonProperty("connections")//todo
     private String connections;
 
-    @JsonProperty("site")
+    @JsonProperty
     private String site;
 
 
@@ -178,6 +182,9 @@ public class User {
      */
     @JsonProperty("photo_max_orig")
     private String photoMaxOrig;
+
+    @JsonProperty
+    private String instagram;
 
     @JsonIgnore
     public String getCustomPhotoMaxOrig() {
@@ -250,4 +257,31 @@ public class User {
     public int hashCode() {
         return ID.hashCode();
     }
+
+
+    //TODO Unused property
+    @JsonProperty
+    private String university_name;
+    @JsonProperty
+    private Integer faculty;
+    @JsonProperty
+    private String faculty_name;
+    @JsonProperty
+    private String graduation;
+    @JsonProperty
+    private String twitter;
+    @JsonProperty
+    private String online_app;
+    @JsonProperty
+    private String online_mobile;
+    @JsonProperty
+    private String skype;
+    @JsonProperty
+    private String education_form;
+    @JsonProperty
+    private String education_status;
+    @JsonProperty
+    private String facebook;
+    @JsonProperty
+    private String facebook_name;
 }

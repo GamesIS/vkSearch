@@ -8,30 +8,48 @@ import java.util.List;
 public class GirlDao {
 
     public Girl findById(int id) {
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Girl.class, id);
+          return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Girl.class, id);
     }
 
     public void save(Girl girl) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.save(girl);
-        tx1.commit();
+        try{
+            session.save(girl);
+            tx1.commit();
+        }
+        catch (Exception e){
+            tx1.rollback();
+            throw e;
+        }
         session.close();
     }
 
     public void update(Girl girl) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.update(girl);
-        tx1.commit();
+        try{
+            session.update(girl);
+            tx1.commit();
+        }
+        catch (Exception e){
+            tx1.rollback();
+            throw e;
+        }
         session.close();
     }
 
     public void delete(Girl girl) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.delete(girl);
-        tx1.commit();
+        try{
+            session.delete(girl);
+            tx1.commit();
+        }
+        catch (Exception e){
+            tx1.rollback();
+            throw e;
+        }
         session.close();
     }
 

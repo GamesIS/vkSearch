@@ -28,7 +28,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -168,7 +170,7 @@ public class MainController {
         hyperlink.setStyle("-fx-color: #000000;");
         nameTextFlow.getChildren().addAll(hyperlink);
 
-        DBHandler.loadJson();
+        //DBHandler.loadJson();
         fullUserList = new ArrayList<>(userMap.values());
         notCheckedUser = new ArrayList<>(fullUserList);
         readyToUIUserList = new ArrayList<>();
@@ -191,42 +193,43 @@ public class MainController {
         }*/
         try {
             int rangeAges = 20;
-            String name = "Анна";
+            String name = "Мария";
             String country;
             String city;
             String school = null;
             String un = null;
             int groupID = -1;
+            users.addAll(getUsersByName(groupID, name, 16, 16, false, 1, null, null, null, null));
             //for(String name: names){
-                for (int i = 0; i <= 8; i++) {
-                    for (int age = 16; age <= 21; age++) {
-                        if (i == 1) {
-                            for (String univer : univers) {
-                                country = null;
-                                city = null;
-                                un = univer;
-                                school = null;
-                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
-                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
-                            }
-                            /*for (String sch : schools) {
-                                country = null;
-                                city = null;
-                                un = null;
-                                school = sch;
-                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
-                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
-                            }*/
-                        } else {
-                            country = RUSSIA;
-                            city = SARATOV;
-                            un = null;
-                            school = null;
-                            Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
-                            users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
-                        }
-                    }
-                }
+//                for (int i = 0; i <= 8; i++) {
+//                    for (int age = 16; age <= 21; age++) {
+//                        if (i == 1) {
+//                            for (String univer : univers) {
+//                                country = null;
+//                                city = null;
+//                                un = univer;
+//                                school = null;
+//                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+//                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+//                            }
+//                            /*for (String sch : schools) {
+//                                country = null;
+//                                city = null;
+//                                un = null;
+//                                school = sch;
+//                                Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+//                                users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+//                            }*/
+//                        } else {
+//                            country = RUSSIA;
+//                            city = SARATOV;
+//                            un = null;
+//                            school = null;
+//                            Thread.sleep(ThreadLocalRandom.current().nextInt(minSleepTime, maxSleepTime + 1));
+//                            users.addAll(getUsersByName(groupID, name, age, age, false, i, un, city, country, school));
+//                        }
+//                    }
+//                }
             //}
         } catch (Exception e) {
             logger.error("Error loading Users", e);
@@ -240,14 +243,17 @@ public class MainController {
         GirlService userService = new GirlService();
         int i = 0;
         for (User user : users) {
-            /*Girl girl = new Girl(user, currentDate);
-            if (userService.findGirl(user.getID()) != null) {
+            Girl girl = new Girl(user, currentDate);
+            if(user.getID().equals(Integer.valueOf(429375982))){
+                System.out.println();
+            }
+            if (userService.findGirl(user.getID()) == null) {
                 userService.saveGirl(girl);
             }
             else {
                 userService.updateGirl(girl);
                 continue;
-            }*/
+            }
 
             Date time = new Date((long) user.getLastSeen().getTime() * 1000);
             if (time.after(calendar.getTime())) {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
+@Deprecated
 public class Education {
     @JsonProperty
     private Integer university; //идентификатор университета

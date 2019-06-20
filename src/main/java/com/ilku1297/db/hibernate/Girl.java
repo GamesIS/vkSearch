@@ -12,7 +12,6 @@ import java.util.Date;
 public class Girl {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String firstName;
     private String lastName;
@@ -31,7 +30,8 @@ public class Girl {
     private Integer friendStatus;
     private Integer nativeCity;
     private Integer blackListedByMe;
-    //private Integer universities;//TODO Потом добавить таблицу/Enum универов
+    private Integer university;//TODO Потом добавить таблицу/Enum универов
+    private String instagram;//TODO Потом добавить таблицу/Enum универов
     //private Integer schools;//TODO Потом добавить таблицу/Enum школ
 
     public Girl() {
@@ -58,7 +58,8 @@ public class Girl {
         this.blackListedByMe = user.getBlacklistedByMe();
 
         //TODO
-        //this.blackListedByMe = user.getUniversities();
+        this.university = user.getUniversity();
+        this.instagram = user.getInstagram();
         //this.blackListedByMe = user.getSchools();
     }
 

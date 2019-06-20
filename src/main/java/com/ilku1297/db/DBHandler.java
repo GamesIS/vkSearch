@@ -3,6 +3,7 @@ package com.ilku1297.db;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.ilku1297.objects.User;
 import com.ilku1297.objects.photos.Photo;
 import com.ilku1297.proxy.JProxy;
@@ -87,12 +88,21 @@ public class DBHandler {
     public static void loadJson() {
         try {
             File file = new File(GIRLS_PATH);
-            JsonNode jsonNode = objectMapper.readValue(file, JsonNode.class);
-            String items = jsonNode.findValue("items").toString();//TODO костыль
-            DBObj dbObj = new DBObj(objectMapper.readValue(items, new TypeReference<List<User>>() {
-            }));
-            addUserToMap(dbObj);
-        } catch (IOException e) {
+            if(file.exists()){
+                JsonNode jsonNode = objectMapper.readValue(file, JsonNode.class);
+                String items = jsonNode.findValue("items").toString();//TODO костыль
+                DBObj dbObj = new DBObj(objectMapper.readValue(items, new TypeReference<List<User>>() {
+                }));
+                addUserToMap(dbObj);
+            }
+            else {
+                file.createNewFile();
+            }
+        }
+            catch (MismatchedInputException e){
+                logger.error(e.getMessage());
+            }
+            catch (IOException e) {
             logger.error("Error loading JSON", e);
             System.exit(0);
         }

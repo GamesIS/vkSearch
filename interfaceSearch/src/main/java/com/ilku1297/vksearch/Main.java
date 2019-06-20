@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 public class Main extends Application {
@@ -23,6 +24,7 @@ public class Main extends Application {
     static Stage window;
 
     public static void main(String[] args) {
+        Locale.setDefault(Locale.ENGLISH);
         Application.launch(args);
     }
 

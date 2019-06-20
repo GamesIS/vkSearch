@@ -1,5 +1,7 @@
 package com.ilku1297.objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * список вузов, в которых учился пользователь. Массив объектов, описывающих университеты. Каждый объект содержит следующие поля:
  * id (integer)— идентификатор университета;
@@ -15,16 +17,27 @@ package com.ilku1297.objects;
  * education_status (string) — статус (например, «Выпускник (специалист)»).
  */
 public class Universities {
+    @JsonProperty
     private Integer id;
+    @JsonProperty
     private Integer country;
+    @JsonProperty
     private Integer city;
+    @JsonProperty
     private String name;
+    @JsonProperty
     private Integer faculty;
+    @JsonProperty("faculty_name")
     private String facultyName;
+    @JsonProperty
     private Integer chair;
+    @JsonProperty("chair_name")
     private String chairName;
+    @JsonProperty
     private Integer graduation;
+    @JsonProperty("education_form")
     private String educationForm;
+    @JsonProperty("education_status")
     private String educationStatus;
 
     public Integer getId() {
