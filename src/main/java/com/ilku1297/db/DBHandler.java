@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.ilku1297.objects.User;
-import com.ilku1297.objects.photos.Photo;
+import com.ilku1297.objects.photos.PhotoPOJO;
 import com.ilku1297.proxy.JProxy;
 import org.apache.log4j.Logger;
 
@@ -153,7 +153,7 @@ public class DBHandler {
 
     //public static final String GIRLS_FOLDER = "H:\\GirlsPhoto";
     public static final String GIRLS_FOLDER = "H:\\girlsPhoto";
-    public static void checkPhoto(Photo photo) {
+    public static void checkPhoto(PhotoPOJO photo) {
         File f = new File(GIRLS_FOLDER);
         if(!f.exists()){
             f.mkdirs();
@@ -181,7 +181,7 @@ public class DBHandler {
         }
     }
 
-    public static void saveImage(Photo photo, BufferedImage bufImage){
+    public static void saveImage(PhotoPOJO photo, BufferedImage bufImage){
         File f = new File(GIRLS_FOLDER);
 
         if(!f.exists()){

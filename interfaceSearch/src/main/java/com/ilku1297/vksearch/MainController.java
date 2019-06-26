@@ -2,10 +2,12 @@ package com.ilku1297.vksearch;
 
 import com.ilku1297.VKRestSender;
 import com.ilku1297.db.DBHandler;
-import com.ilku1297.db.hibernate.Girl;
-import com.ilku1297.db.hibernate.GirlService;
+import com.ilku1297.db.hibernate.girl.Girl;
+import com.ilku1297.db.hibernate.girl.GirlService;
+import com.ilku1297.db.hibernate.photo.Photo;
 import com.ilku1297.objects.User;
-import com.ilku1297.objects.photos.Photo;
+import com.ilku1297.objects.photos.PhotoPOJO;
+import com.ilku1297.proxy.Constants;
 import com.ilku1297.proxy.ProxyHandler;
 import com.ilku1297.vksearch.multithreading.SearchThread;
 import javafx.application.Platform;
@@ -28,18 +30,13 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.sql.*;
 import java.util.*;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
+import static com.ilku1297.VKRestSender.getAllPhoto;
 import static com.ilku1297.VKRestSender.getUsersByName;
 import static com.ilku1297.db.DBHandler.*;
-import static com.ilku1297.vksearch.ConstHelper.RUSSIA;
-import static com.ilku1297.vksearch.ConstHelper.SARATOV;
-import static com.ilku1297.vksearch.multithreading.SearchThread.maxSleepTime;
-import static com.ilku1297.vksearch.multithreading.SearchThread.minSleepTime;
 
 public class MainController {
     public static final String FAMILY = "Helvetica";
@@ -244,17 +241,15 @@ public class MainController {
         int i = 0;
         for (User user : users) {
             Girl girl = new Girl(user, currentDate);
-            if(user.getID().equals(Integer.valueOf(429375982))){
-                System.out.println();
-            }
             if (userService.findGirl(user.getID()) == null) {
                 userService.saveGirl(girl);
             }
             else {
+
+                girl.getPhotoList().addAll(Photo.listPOJOToDO(getAllPhoto(user), girl));
                 userService.updateGirl(girl);
                 continue;
             }
-
             Date time = new Date((long) user.getLastSeen().getTime() * 1000);
             if (time.after(calendar.getTime())) {
                 i++;
@@ -356,7 +351,7 @@ public class MainController {
 
     private static void downloadAllPhoto(User user) {
         if (user.getPhotoList() != null) {
-            for (Photo photo : user.getPhotoList()) {
+            for (PhotoPOJO photo : user.getPhotoList()) {
                 DBHandler.checkPhoto(photo);
                 if (photo.getDownloadedMaxImage() == null) {
                     photo.setDownloadedMaxImage(downloadPhoto(photo));
@@ -365,10 +360,10 @@ public class MainController {
         }
     }
 
-    private void setScrollGallery(List<Photo> photoList) {
+    private void setScrollGallery(List<PhotoPOJO> photoList) {
         clearGallery();
         //downloadAllPhoto(photoList);
-        for (Photo photo : photoList) {
+        for (PhotoPOJO photo : photoList) {
             ImageView view = new ImageView();
             view.setImage(photo.getDownloadedMaxImage());
             imageViewList.add(view);
@@ -446,14 +441,14 @@ public class MainController {
             image = ImageIO.read(url);
         } catch (Exception e) {
             logger.error("Error loading images from URL", e);
-            return downloadPhoto(User.NO_PHOTO);
+            return downloadPhoto(Constants.NO_PHOTO);
         }
         return image;
     }
 
 
     public static BufferedImage downloadPhoto(Photo photo) {
-        BufferedImage bufferedImage = downloadPhoto(photo.getMaxPhotoURL());
+        BufferedImage bufferedImage = downloadPhoto(photo);
         DBHandler.saveImage(photo, bufferedImage);
         return bufferedImage;
     }
@@ -505,7 +500,7 @@ public class MainController {
             g2d.dispose();*/
     }
 
-    public void setMainImage(Photo photo) {
+    public void setMainImage(PhotoPOJO photo) {
         if (photo != null && photo.getDownloadedMaxImage() != null) {
 
             mainImage.setImage(photo.getDownloadedMaxImage());

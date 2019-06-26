@@ -3,6 +3,7 @@ package com.ilku1297.vksearch.multithreading;
 import com.ilku1297.VKRestSender;
 import com.ilku1297.db.DBHandler;
 import com.ilku1297.objects.User;
+import com.ilku1297.proxy.Constants;
 import com.ilku1297.proxy.ProxyHandler;
 import com.ilku1297.vksearch.MainController;
 import javafx.application.Platform;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.ilku1297.db.DBHandler.*;
-import static com.ilku1297.vksearch.ConstHelper.RUSSIA;
-import static com.ilku1297.vksearch.ConstHelper.SARATOV;
 
 public class SearchThread implements Runnable {
     private static Logger logger = Logger.getLogger("search");
@@ -67,7 +66,7 @@ public class SearchThread implements Runnable {
                     Thread thread = new Thread (() -> {
                         List<User> users = null;
                         try {
-                            users = VKRestSender.getUsersByName(-1, name, tmpAge, tmpAge, true, 0, null, SARATOV, RUSSIA, null);
+                            users = VKRestSender.getUsersByName(-1, name, tmpAge, tmpAge, true, 0, null, Constants.SARATOV, Constants.RUSSIA, null);
                         } catch (Exception e) {
                             logger.error("Error in SearchThread", e);
                             saveJson();

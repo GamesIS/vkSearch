@@ -6,18 +6,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.db.DBHandler;
 import com.ilku1297.db.DBObj;
 import com.ilku1297.objects.User;
-import com.ilku1297.objects.photos.Photo;
-import com.ilku1297.objects.photos.PhotoList;
+import com.ilku1297.objects.photos.PhotoPOJO;
+import com.ilku1297.proxy.Constants;
 import com.ilku1297.proxy.JProxy;
 import com.ilku1297.proxy.ProxyHandler;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.ilku1297.InternetAvailabilityChecker.isInternetAvailable;
@@ -43,10 +43,11 @@ public class VKRestSender {
         builder.registerTypeAdapter(User.class, new UserDesirializer());
     }*/
 
-    public static List<Photo> getAllPhoto(User user) {
+    public static List<PhotoPOJO> getAllPhoto(User user) {
         String url = ADDRESS + "photos.getAll?owner_id=" + user.getID() + "&count=20&extended=1&photo_sizes=1" + VER_ACC_TOK;
         String response = null;
         String items = null;
+        List<PhotoPOJO> photoList = new ArrayList<>();
         try{
             response = sendGet(url, false);
             ObjectMapper mapper = new ObjectMapper();
@@ -57,24 +58,21 @@ public class VKRestSender {
                 System.out.println(items);
             }
 
-            List<Photo> photoList = null;
             if (items != null) {
-                photoList = mapper.readValue(items, new TypeReference<List<Photo>>() {});
+                photoList = mapper.readValue(items, new TypeReference<List<PhotoPOJO>>() {});
             }
             else {
-                if(response.equals("Access denied: user deactivated")){
-                    throw new IllegalArgumentException("Access denied: user deactivated");
+                if(response.equals(Constants.EX_USER_DEACTIVATED)){
+                    throw new IllegalArgumentException(Constants.EX_USER_DEACTIVATED);
                 }
                 itemsNode = jsonNode.findValue("error_msg");
                 if (itemsNode != null) {
                     items = itemsNode.asText();
-                    if(items.equals("This profile is private")){
-                        throw new IllegalArgumentException(items);
+                    if(items.equals(Constants.EX_PROFILE_PRIVATE)){
+                        throw new IllegalArgumentException(Constants.EX_PROFILE_PRIVATE);
                     }
                 }
             }
-            return photoList;
-
         }
         catch (IllegalArgumentException ex){
             throw new IllegalArgumentException(ex.getMessage());
@@ -82,7 +80,7 @@ public class VKRestSender {
         catch (Exception ex){
             logger.error("Error loading allPhoto" , ex);
         }
-        return null;
+        return photoList;
     }
 
     public static List<User> getUsersByName(int groupID, String name, int ageFrom, int ageTo, boolean isNeedProxy, int status, String univer, String city, String country, String school) throws Exception {

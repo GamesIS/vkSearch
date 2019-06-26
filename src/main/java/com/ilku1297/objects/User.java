@@ -1,22 +1,18 @@
 package com.ilku1297.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ilku1297.VKRestSender;
-import com.ilku1297.objects.photos.Photo;
-import javafx.scene.image.Image;
+import com.ilku1297.db.hibernate.photo.Photo;
+import com.ilku1297.objects.photos.PhotoPOJO;
+import com.ilku1297.proxy.Constants;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.log4j.Logger;
 
 import java.awt.image.BufferedImage;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.ilku1297.VKRestSender.ADDRESS;
@@ -27,8 +23,6 @@ import static com.ilku1297.VKRestSender.VER_ACC_TOK;
 public class User {
     @JsonIgnore
     private static Logger logger = Logger.getLogger(User.class);
-    @JsonIgnore
-    public static final String NO_PHOTO = "https://image.shutterstock.com/image-vector/no-photo-camera-vector-sign-260nw-185031695.jpg";
 
     @JsonIgnore
     public static String fields = "&fields=photo,last_seen,sex,hometown,has_photo,friend_status,followers_count,education,country,common_count,blacklisted_by_me,bdate,online,relation,relationPartner,schools,universities,connections,site,photo_max_orig";
@@ -207,7 +201,7 @@ public class User {
                 logger.error("Error getPhotoMaxOrig", e);
             }
             hasPhoto = 0;
-            return NO_PHOTO;
+            return Constants.NO_PHOTO;
         }
     }
     @JsonIgnore
@@ -215,22 +209,22 @@ public class User {
 
     public void setMainPhoto(Photo mainPhoto) {
         this.mainPhoto = mainPhoto;
-        mainPhoto.setUserID(ID);
+        mainPhoto.setUser(ID);//TODO Переносим логику в Photo, и User в Girl
     }
 
     public User() {
     }
 
     @JsonIgnore
-    private List<Photo> photoList;
+    private List<PhotoPOJO> photoList;
 
     @JsonIgnore
-    public List<Photo> getPhotoList() {
+    public List<PhotoPOJO> getPhotoList() {
         return photoList;
     }
 
     @JsonIgnore
-    public void setPhotoList(List<Photo> photoList) {
+    public void setPhotoList(List<PhotoPOJO> photoList) {
         this.photoList = photoList;
         //this.photoList = new ArrayList<>();
         //this.photoList.add(mainPhoto);
